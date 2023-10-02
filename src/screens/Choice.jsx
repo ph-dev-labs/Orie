@@ -1,22 +1,32 @@
-import { StyleSheet, SafeAreaView, View, Text, Image } from "react-native";
-import React from "react";
+import React, { useState } from "react";
+import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import Orie from "../../assets/1Orie.svg";
 import { useFonts } from "expo-font";
-import {
-  Raleway_600SemiBold,
-  Raleway_800ExtraBold,
-} from "@expo-google-fonts/raleway";
-import Holders from "../components/Holders";
+import { Raleway_600SemiBold, Raleway_800ExtraBold } from "@expo-google-fonts/raleway";
 import Buy from "../../assets/BagBuy.svg";
 import Sell from "../../assets/shopsell.svg";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
+import { setUserType } from "../Redux/Auth/registerSlice";
+import Holders from "../components/Holders";
+import { useDispatch } from "react-redux";
 
 const Choice = () => {
   const navigate = useNavigation();
+  const [selectedOption, setSelectedOption] = useState(null);
+  const dispatch = useDispatch()
+
+  const handleOptionPress = (option) => {
+    setSelectedOption((prevSelected) => (prevSelected === option ? null : option));
+  };
 
   const handlePress = () => {
-    navigate.navigate("Register-mobile");
+    if (selectedOption) {
+      dispatch(setUserType(selectedOption));
+      navigate.navigate("Register-mobile");
+    } else {
+      // Display an error message or prevent navigation if no option is selected
+    }
   };
 
   const [fontsLoaded] = useFonts({
@@ -28,9 +38,15 @@ const Choice = () => {
     return <SafeAreaView style={styles.container}></SafeAreaView>;
   }
 
+  const activeStyles = {
+    borderColor: (option) => (selectedOption === option ? "#0AC17F" : "#B4B4B4"),
+    svgColor: (option) => (selectedOption === option ? "#0AC17F" : "#000"),
+    textColor: (option) => (selectedOption === option ? "#0AC17F" : "#000"),
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.cont} >
+      <View style={styles.cont}>
         <View style={styles.svgWrapper}>
           <Orie />
         </View>
@@ -39,8 +55,20 @@ const Choice = () => {
           <Text style={styles.title}>What will you be using orie for?</Text>
         </View>
         <View style={styles.box}>
-          <Holders title="buying" icon={<Buy />} />
-          <Holders title="selling" icon={<Sell />} />
+          <Holders
+            title="buying"
+            icon={<Buy />}
+            selected={selectedOption === "buying"}
+            onPress={() => handleOptionPress("buying")}
+            activeStyle={activeStyles}
+          />
+          <Holders
+            title="selling"
+            icon={<Sell />}
+            selected={selectedOption === "selling"}
+            onPress={() => handleOptionPress("selling")}
+            activeStyle={activeStyles}
+          />
         </View>
       </View>
       <CustomButton text="get started" onPress={handlePress} />
@@ -54,9 +82,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
-
   content: {
     alignItems: "center",
     marginTop: 30,
@@ -71,7 +98,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     width: 250,
   },
-
   cont: {
     alignItems: "center",
   },

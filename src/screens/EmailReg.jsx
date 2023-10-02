@@ -1,5 +1,5 @@
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, {useState} from "react";
 import Back from "../../assets/back.svg";
 import { useFonts } from "expo-font";
 import {
@@ -10,15 +10,25 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
+import { setEmail } from "../Redux/Auth/registerSlice";
+import { useDispatch } from "react-redux";
 
 const EmailReg = () => {
   const navigate = useNavigation();
+  const dispatch = useDispatch()
+
+  const [emailAd, setEmailAd] = useState("")
+  
+  const handleChange = (text) => {
+    setEmailAd(text)
+  }
 
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
 
   const moveToVerification = () => {
+    dispatch(setEmail(emailAd))
     navigate.navigate("Verification-email");
   };
 
@@ -44,7 +54,7 @@ const EmailReg = () => {
             We'll send a verification to your email address
           </Text>
           <View style={styles.input}>
-            <CustomInputField placeholder="Enter phone number" />
+            <CustomInputField placeholder="Enter phone number" keyboardType={"email-address"} onChangeText={handleChange} value={emailAd} />
           </View>
           <View>
             <Text style={styles.text3i}>

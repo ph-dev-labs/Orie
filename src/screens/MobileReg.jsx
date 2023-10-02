@@ -1,5 +1,5 @@
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, {useState} from "react";
 import Back from "../../assets/back.svg";
 import { useFonts } from "expo-font";
 import {
@@ -10,9 +10,18 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
+import { setNumber } from "../Redux/Auth/registerSlice";
+import { useDispatch } from "react-redux";
 
 const MobileReg = () => {
   const navigation = useNavigation();
+  const dispatch = useDispatch()
+
+  const [phoneNumber, setPhoneNumber] = useState("")
+  
+  const handleChange = (text) => {
+    setPhoneNumber(text)
+  } 
 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
@@ -24,6 +33,7 @@ const MobileReg = () => {
   };
 
   const moveToVerification = () => {
+    dispatch(setNumber(phoneNumber))
     navigation.navigate("Verification");
   };
 
@@ -44,7 +54,7 @@ const MobileReg = () => {
             We'll send a verification to your provided phone number
           </Text>
           <View style={styles.input}>
-            <CustomInputField placeholder="Enter phone number" type="number"/>
+            <CustomInputField placeholder="Enter phone number" keyboardType="numeric" onChangeText={handleChange} value={phoneNumber} />
           </View>
           <View>
             <Text style={styles.text3i}>

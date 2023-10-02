@@ -3,36 +3,40 @@ import { StyleSheet, View, Text, TouchableWithoutFeedback } from "react-native";
 import { useFonts } from "expo-font";
 import { Raleway_700Bold } from "@expo-google-fonts/raleway";
 
-const Holders = ({ icon, title }) => {
+const Holders = ({ icon, title, selected, onPress, activeStyle }) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const toggleCheckbox = () => {
     setIsChecked(!isChecked);
+    if (onPress) {
+      onPress();
+    }
   };
 
   const [fontsLoaded] = useFonts({
-    Raleway_700Bold   
-  })
+    Raleway_700Bold,
+  });
 
-if(!fontsLoaded) {
-  return (
-    <View style={[styles.box, { borderColor }]}>
+  if (!fontsLoaded) {
+    return <View style={styles.box}></View>;
+  }
 
-    </View>
-  )
-}
+  const containerStyle = {
+    ...styles.box,
+    borderColor: selected ? activeStyle.borderColor(title) : styles.box.borderColor,
+  };
 
-
-  const borderColor = isChecked ? "#0AC17F" : "#B4B4B4"; // Border color changes based on the checkbox state
-  const svgColor = isChecked ? "#0AC17F" : "#000"; // SVG color changes based on the checkbox state
-  const textColor = isChecked ? "#0AC17F" : "#000";
+  const textStyle = {
+    ...styles.text,
+    color: selected ? activeStyle.textColor(title) : styles.text.color,
+  };
 
   return (
     <View style={styles.container}>
       <TouchableWithoutFeedback onPress={toggleCheckbox}>
-        <View style={[styles.box, { borderColor }]}>
-        {React.cloneElement(icon, { stroke: isChecked ? "#0AC17F" : "" })}
-          <Text style={[styles.text, {color: textColor }]}>{title}</Text>
+        <View style={containerStyle}>
+          {React.cloneElement(icon)}
+          <Text style={textStyle}>{title}</Text>
         </View>
       </TouchableWithoutFeedback>
     </View>
@@ -54,13 +58,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#fff", // Background color
     margin: 35,
+    borderColor: "#B4B4B4", // Default border color
   },
   text: {
     fontSize: 18,
     fontFamily: "Raleway_700Bold",
     textTransform: "capitalize",
     lineHeight: 27,
-    letterSpacing: .5,
+    letterSpacing: 0.5,
+    color: "#000", // Default text color
   },
 });
 

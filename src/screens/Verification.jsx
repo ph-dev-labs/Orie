@@ -5,12 +5,15 @@ import { Raleway_600SemiBold, Raleway_800ExtraBold } from "@expo-google-fonts/ra
 import { useNavigation } from "@react-navigation/native";
 import SplitOTPInput from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
-
+import { setOtp } from "../Redux/Auth/registerSlice";
+import { useDispatch } from "react-redux";
 export default function Verification() {
 
+  const dispatch = useDispatch()
   const navigate = useNavigation()
 
   const handleNavigation = () => {
+    dispatch(setOtp(otp))
     navigate.navigate("Create-Password")
   }
     const [fontsLoaded] = useFonts({

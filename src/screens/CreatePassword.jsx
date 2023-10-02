@@ -12,19 +12,73 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
+import { setEmail, setPassword, setUserType, setNumber, setConfirmPassword, setOtp } from "../Redux/Auth/registerSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useRegisterMutation } from "../Redux/Services/AuthAPi";
 
 const EmailReg = () => {
   const navigate = useNavigation();
   const [showPassword, setShowPassword] = useState(true);
+  const [passwordField, setPasswordField] = useState("");
+  const [confirmPasswordField, setConfirmPasswordField] = useState("");
+  const [error, setError] = useState("");
 
+  const dispatch = useDispatch();
 
+  const handlePassword = (text) => {
+    setPasswordField(text);
+  };
+
+  const register = useRegisterMutation()
+
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#])[0-9a-zA-Z@#]{8,16}$/;
+    return passwordRegex.test(password);
+  };
+
+  const handleConfirmPassword = (text) => {
+    setConfirmPasswordField(text);
+  };
 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const moveToVerification = () => {
-    navigate.navigate("Login");
+    if (
+      passwordField === confirmPasswordField &&
+      validatePassword(passwordField)
+    ) {
+      dispatch(setConfirmPassword(confirmPasswordField));
+      dispatch(setPassword(passwordField));
+    } else {
+      setError("Password does not meet the criteria.");
+    }
+  };
+
+  const handleRegistration = async () => {
+    moveToVerification();
+    const userData = {
+      email: useSelector((state) => state.registration.email),
+      password: useSelector((state) => state.registration.password),
+      userType: useSelector((state) => state.registration.userType),
+      otp: useSelector((state) => state.registration.otp),
+      number: useSelector((state) => state.registration.number),
+      confirmPassword: useSelector((state) => state.registration.confirmPassword)
+    };
+
+    try {
+      const result = await register(userData).unwrap();
+      // Handle successful registration
+      console.log("Registration successful:", result);
+
+      // Optionally, navigate to a success screen
+      navigate.navigate("Login");
+    } catch (error) {
+      // Handle registration error
+      console.error("Registration error:", error.message);
+    }
   };
 
   const [fontsLoaded] = useFonts({
@@ -55,6 +109,9 @@ const EmailReg = () => {
                 placeholder="Enter Password"
                 style={{ width: 320 }}
                 secureTextEntry={showPassword}
+                value={passwordField}
+                onChangeText={handlePassword}
+                error={error}
               />
               <TouchableOpacity
                 onPress={handleShowPassword}
@@ -72,6 +129,9 @@ const EmailReg = () => {
                 placeholder="Re-enter Password"
                 style={{ width: 320 }}
                 secureTextEntry={showPassword}
+                value={confirmPasswordField}
+                onChangeText={handleConfirmPassword}
+                error={error}
               />
               <TouchableOpacity
                 onPress={handleShowPassword}
@@ -85,11 +145,10 @@ const EmailReg = () => {
               </TouchableOpacity>
             </View>
           </View>
-          <View style={{ transform: [{ translateY: -35 }] }}>
+          <View style={{ transform: [{ translateY: -7 }] }}>
             <Text style={styles.text3i}>
-              Must be 8-16 characters long
-              Combinatio of number, text and a symbol e.g @, #
-              
+              Must be 8-16 characters long Combinatio of number, text and a
+              symbol e.g @, #
             </Text>
           </View>
         </View>
@@ -97,7 +156,7 @@ const EmailReg = () => {
           <CustomButton
             text="Finish Registration"
             type="email"
-            onPress={moveToVerification}
+            onPress={handleRegistration}
           />
           <Text style={styles.text3}>
             By clicking ‘finish registeration’, you’re agreeing to Orie’s{" "}
@@ -120,7 +179,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 7,
   },
   input: {
     flexDirection: "row",
@@ -182,7 +241,7 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 12,
     lineHeight: 20,
-    marginBottom: 30,
+    marginBottom: 10,
   },
 
   brand: {
