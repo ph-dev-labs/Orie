@@ -1,46 +1,27 @@
-import React, { useState, useRef } from "react";
-import { View, Text, TextInput, StyleSheet } from "react-native";
-import { useFonts, Raleway_600SemiBold, Raleway_800ExtraBold } from "@expo-google-fonts/raleway";
+import React, { useRef } from "react";
+import { View, TextInput, StyleSheet } from "react-native";
 
-export default function Verification() {
-  const [fontsLoaded] = useFonts({
-    Raleway_600SemiBold,
-    Raleway_800ExtraBold,
-  });
-
+const SplitField = ({ otp, handleInputChange }) => {
   const inputRefs = useRef([]); // Array of refs for OTP input fields
-  const [otp, setOTP] = useState(['', '', '', '', '']);
-
-  // Function to handle OTP input
-  const handleInputChange = (value, index) => {
-    const updatedOTP = [...otp];
-    updatedOTP[index] = value;
-    setOTP(updatedOTP);
-    
-    // Focus on the next input field if available
-    if (index < inputRefs.current.length - 1 && value.length === 1) {
-      inputRefs.current[index + 1].focus();
-    }
-  };
 
   return (
-    <View style={styles.container}>
-        <View style={styles.otpContainer}>
-          {otp.map((part, index) => (
-            <TextInput
-              key={index}
-              ref={(ref) => (inputRefs.current[index] = ref)}
-              style={styles.otpInput}
-              maxLength={1}
-              value={part}
-              onChangeText={(value) => handleInputChange(value, index)}
-              keyboardType="numeric"
-            />
-          ))}
-        </View>
-      </View>
+    <View style={styles.otpContainer}>
+      {otp.map((part, index) => (
+        <TextInput
+          key={index}
+          ref={(ref) => (inputRefs.current[index] = ref)}
+          style={styles.otpInput}
+          maxLength={1}
+          value={part}
+          onChangeText={(value) => handleInputChange(value, index)}
+          keyboardType="numeric"
+        />
+      ))}
+    </View>
   );
-}
+};
+
+export default SplitField;
 
 const styles = StyleSheet.create({
   container: {

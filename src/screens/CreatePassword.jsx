@@ -1,35 +1,32 @@
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
-import Back from "../../assets/back.svg";
-import Eye from "../../assets/eye.svg";
-import { useFonts } from "expo-font";
-import {
-  Raleway_600SemiBold,
-  Raleway_800ExtraBold,
-  Raleway_500Medium,
-} from "@expo-google-fonts/raleway";
+import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
-import { setEmail, setPassword, setUserType, setNumber, setConfirmPassword, setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useRegisterMutation } from "../Redux/Services/AuthAPi";
+import Back from "../../assets/back.svg";
+import Eye from "../../assets/eye.svg";
 
-const EmailReg = () => {
-  const navigate = useNavigation();
+import {
+  setPassword,
+  setConfirmPassword,
+  registerUserAsync
+} from "../Redux/Auth/registerSlice";
+
+const CreatePassword = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [passwordField, setPasswordField] = useState("");
   const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const [error, setError] = useState("");
-
+  const navigate = useNavigation();
   const dispatch = useDispatch();
+
+ 
 
   const handlePassword = (text) => {
     setPasswordField(text);
   };
-
-  const register = useRegisterMutation()
 
   const validatePassword = (password) => {
     const passwordRegex =
@@ -45,47 +42,34 @@ const EmailReg = () => {
     setShowPassword(!showPassword);
   };
 
-  const moveToVerification = () => {
-    if (
-      passwordField === confirmPasswordField &&
-      validatePassword(passwordField)
-    ) {
-      dispatch(setConfirmPassword(confirmPasswordField));
-      dispatch(setPassword(passwordField));
+  // Gather user data from the Redux store
+
+ 
+  const completeRegistration = () => {
+    if (passwordField === confirmPasswordField &&validatePassword(passwordField)) {
+      dispatch(setPassword(passwordField))
+      dispatch(setConfirmPassword(confirmPasswordField))
+      const userData = {
+        email: useSelector((state) => state.registration.email),
+        password: passwordField, // Use the updated password field
+        userType: useSelector((state) => state.registration.userType),
+        otp: useSelector((state) => state.registration.otp),
+        number: useSelector((state) => state.registration.number),
+        confirmPassword: confirmPasswordField, // Use the updated confirmPassword field
+      };
+      // Dispatch the registration action
+      dispatch(registerUserAsync(userData))
+        .then(() => {
+          // Optionally, navigate to the next screen upon successful registration
+          navigate("Login");
+        })
+        .catch((error) => {
+          setError("An error occurred during registration.");
+        });
     } else {
       setError("Password does not meet the criteria.");
     }
   };
-
-  const handleRegistration = async () => {
-    moveToVerification();
-    const userData = {
-      email: useSelector((state) => state.registration.email),
-      password: useSelector((state) => state.registration.password),
-      userType: useSelector((state) => state.registration.userType),
-      otp: useSelector((state) => state.registration.otp),
-      number: useSelector((state) => state.registration.number),
-      confirmPassword: useSelector((state) => state.registration.confirmPassword)
-    };
-
-    try {
-      const result = await register(userData).unwrap();
-      // Handle successful registration
-      console.log("Registration successful:", result);
-
-      // Optionally, navigate to a success screen
-      navigate.navigate("Login");
-    } catch (error) {
-      // Handle registration error
-      console.error("Registration error:", error.message);
-    }
-  };
-
-  const [fontsLoaded] = useFonts({
-    Raleway_600SemiBold,
-    Raleway_800ExtraBold,
-    Raleway_500Medium,
-  });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -101,7 +85,7 @@ const EmailReg = () => {
           </View>
           <Text style={styles.Header}>Create a password</Text>
           <Text style={styles.text2}>
-            choose a strong password for your account
+            Choose a strong password for your account
           </Text>
           <View style={styles.inputHolder}>
             <View style={styles.input}>
@@ -147,8 +131,8 @@ const EmailReg = () => {
           </View>
           <View style={{ transform: [{ translateY: -7 }] }}>
             <Text style={styles.text3i}>
-              Must be 8-16 characters long Combinatio of number, text and a
-              symbol e.g @, #
+              Must be 8-16 characters long Combination of number, text, and a
+              symbol (e.g., @, #)
             </Text>
           </View>
         </View>
@@ -156,12 +140,12 @@ const EmailReg = () => {
           <CustomButton
             text="Finish Registration"
             type="email"
-            onPress={handleRegistration}
+            onPress={completeRegistration}
           />
           <Text style={styles.text3}>
-            By clicking ‘finish registeration’, you’re agreeing to Orie’s{" "}
-            <Text style={styles.brand}> Terms and Condition</Text> and their{" "}
-            <Text style={styles.brand}>Privacy Policy </Text>
+            By clicking 'Finish Registration', you're agreeing to Orie's{" "}
+            <Text style={styles.brand}>Terms and Conditions</Text> and their{" "}
+            <Text style={styles.brand}>Privacy Policy</Text>
           </Text>
         </View>
       </View>
@@ -169,7 +153,7 @@ const EmailReg = () => {
   );
 };
 
-export default EmailReg;
+export default CreatePassword;
 
 const styles = StyleSheet.create({
   container: {

@@ -1,35 +1,47 @@
+import React, { useState } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
-import React, {useState} from "react";
+import { TouchableOpacity } from "react-native";
 import Back from "../../assets/back.svg";
 import { useFonts } from "expo-font";
-import {
-  Raleway_600SemiBold,
-  Raleway_800ExtraBold,
-} from "@expo-google-fonts/raleway";
+import { Raleway_600SemiBold, Raleway_800ExtraBold } from "@expo-google-fonts/raleway";
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity } from "react-native";
 import { setEmail } from "../Redux/Auth/registerSlice";
 import { useDispatch } from "react-redux";
 
 const EmailReg = () => {
   const navigate = useNavigation();
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
-  const [emailAd, setEmailAd] = useState("")
-  
+  const [emailAd, setEmailAd] = useState("");
+  const [emailError, setEmailError] = useState("");
+
   const handleChange = (text) => {
-    setEmailAd(text)
-  }
+    setEmailAd(text);
+
+    // Regular expression for email validation
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+
+    if (!emailRegex.test(text)) {
+      setEmailError("Invalid email address");
+    } else {
+      setEmailError("");
+    }
+  };
 
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
 
   const moveToVerification = () => {
-    dispatch(setEmail(emailAd))
-    navigate.navigate("Verification-email");
+    if (emailError === "") {
+      dispatch(setEmail(emailAd));
+      navigate.navigate("Verification-email");
+    } else {
+      // You may choose to display an error message here
+      // or prevent navigation if the email is invalid
+    }
   };
 
   const [fontsLoaded] = useFonts({
@@ -54,7 +66,13 @@ const EmailReg = () => {
             We'll send a verification to your email address
           </Text>
           <View style={styles.input}>
-            <CustomInputField placeholder="Enter phone number" keyboardType={"email-address"} onChangeText={handleChange} value={emailAd} />
+            <CustomInputField
+              placeholder="Enter email address"
+              keyboardType={"email-address"}
+              onChangeText={handleChange}
+              value={emailAd}
+              error={emailError}
+            />
           </View>
           <View>
             <Text style={styles.text3i}>
@@ -81,6 +99,7 @@ const EmailReg = () => {
 };
 
 export default EmailReg;
+
 
 const styles = StyleSheet.create({
   container: {
