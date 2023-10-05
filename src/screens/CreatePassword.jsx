@@ -4,9 +4,10 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
+import { registerUserAsync } from "../Redux/Auth/registerSlice";
 
 import { setPassword, setConfirmPassword } from "../Redux/Auth/registerSlice";
 
@@ -28,26 +29,39 @@ const CreatePassword = () => {
     return passwordRegex.test(password);
   };
 
+  const userData = {
+    email: useSelector((state) => state.registration.emai),
+    number: useSelector((state) => state.registration.number),
+    userType: useSelector((state) => state.registration.userType),
+    password: useSelector((state) => state.registration.password)
+  }
+
   const handleConfirmPassword = (text) => {
     setConfirmPasswordField(text);
   };
-
+ 
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const moveToOtp = () => {
-    if (passwordField !== confirmPasswordField) {
-      setError("Passwords do not match");
-    } else if (!validatePassword(passwordField)) {
-      setError("Password criteria not met");
-    } else {
-      dispatch(setPassword(passwordField));
-      dispatch(setConfirmPassword(confirmPasswordField));
-      navigate.navigate("Verification");
+ 
+  const moveToOtp = async () => {
+    try {
+      if (passwordField !== confirmPasswordField) {
+        setError("Passwords do not match");
+      } else if (!validatePassword(passwordField)) {
+        setError("Password criteria not met");
+      } else {
+        dispatch(setPassword(passwordField));
+        dispatch(setConfirmPassword(confirmPasswordField));
+        await dispatch(registerUserAsync(userData)); // post request
+        console.log("Account created successfully");
+        navigate.navigate("Verification");
+      }
+    } catch (error) {
+      setError(error.message);
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>

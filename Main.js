@@ -17,7 +17,6 @@ const Stack = createNativeStackNavigator();
 
 export default function Main() {
 
-  
 
   return (
     <NavigationContainer ref={navigationRef}>
