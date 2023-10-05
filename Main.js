@@ -7,7 +7,6 @@ import Choice from './src/screens/Choice';
 import MobileReg from './src/screens/MobileReg'
 import EmailReg from './src/screens/EmailReg';
 import Verification from './src/screens/Verification';
-import VerificationEmail from './src/screens/VerificationEmail';
 import CreatePassword from './src/screens/CreatePassword';
 import { navigationRef } from './src/Navigation/Navigation';
 import Login from './src/screens/Login';
@@ -52,10 +51,7 @@ export default function Main() {
           name="Verification"
           component={Verification}
         />
-        <Stack.Screen
-          name="Verification-email"
-          component={VerificationEmail}
-        />
+        
         <Stack.Screen
           name="Create-Password"
           component={CreatePassword}

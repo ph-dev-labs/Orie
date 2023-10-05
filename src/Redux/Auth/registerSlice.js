@@ -16,10 +16,12 @@ const initialState = {
 
 export const registerUserAsync = createAsyncThunk(
   "registration/registerUser",
-  async (userData, { dispatch }) => {
+  async (userData,) => {
     try {
       const result = await registerUser(userData);
+      console.log(result)
       return result;
+      
     } catch (error) {
       throw error;
     }

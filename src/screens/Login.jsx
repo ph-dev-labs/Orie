@@ -49,7 +49,7 @@ const Login = () => {
           <Text style={styles.text2}>
             Enter your email or number and password
           </Text>
-          <View style={styles.inputHolder}>
+         <View style={styles.inputHolder}>
             <View style={styles.input}>
               <CustomInputField
                 placeholder="Enter email or phone number"
@@ -91,7 +91,7 @@ const Login = () => {
               <Text style={styles.text3i}>Forgot Password</Text>
             </View>
           </View>
-        </View>
+        </View> 
         <View style={styles.btnView}>
           <CustomButton
             text="Finish Registration"

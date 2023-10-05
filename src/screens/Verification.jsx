@@ -6,26 +6,23 @@ import { useNavigation } from "@react-navigation/native";
 import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
 import { setOtp } from "../Redux/Auth/registerSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Verification = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
   const dispatch = useDispatch();
   const navigate = useNavigation();
-  const handleNavigation = () => {
-    // Dispatch the OTP to the Redux store
-    dispatch(setOtp(otp));
-    navigate.navigate("Create-Password");
-  };
-
+ 
   const handleInputChange = (text, index) => {
     const updatedOTP = [...otp];
     updatedOTP[index] = text;
     setOTP(updatedOTP);
   };
-  
 
+  const email = useSelector((state) => state.registration.email)
+  const number = useSelector((state) => state.registration.number)
+  const displayText = email !== '' ? email : number;
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
@@ -37,7 +34,7 @@ const Verification = () => {
         <Text style={styles.verificationHeader}>Enter verification code</Text>
         <Text style={styles.verificationText1}>
           Enter the code we sent to{" "}
-          <Text style={styles.number}>0990938848</Text>
+          <Text style={styles.number}>{displayText}</Text>
         </Text>
         <View style={styles.otp}>
           <SplitField otp={otp} handleInputChange={handleInputChange} />
@@ -47,7 +44,7 @@ const Verification = () => {
         </View>
       </View>
 
-      <CustomButton text="Continue" onPress={handleNavigation} />
+      <CustomButton text="Finish registration" onPress={()=>{console.log("successful")}} />
     </SafeAreaView>
   );
 };
@@ -64,6 +61,7 @@ const styles = StyleSheet.create({
   otp: {
     marginTop: 30,
     flexDirection: "column",
+    alignItems: "center"
   },
   content: {
     flex: 1,

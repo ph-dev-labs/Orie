@@ -32,9 +32,9 @@ const MobileReg = () => {
     navigation.navigate("Register-email");
   };
 
-  const moveToVerification = () => {
+  const createPassword = () => {
     dispatch(setNumber(phoneNumber))
-    navigation.navigate("Verification");
+    navigation.navigate("Create-Password");
   };
 
   return (
@@ -67,8 +67,8 @@ const MobileReg = () => {
         </View>
         <View style={styles.btnView}>
           <CustomButton
-            text="send verification code"
-            onPress={moveToVerification}
+            text="Continue"
+            onPress={createPassword}
           />
           <Text style={styles.text3}>
             Already have an account? <Text style={styles.brand}>Login</Text>

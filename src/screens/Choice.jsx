@@ -23,7 +23,7 @@ const Choice = () => {
   const handlePress = () => {
     if (selectedOption) {
       dispatch(setUserType(selectedOption));
-      navigate.navigate("Register-mobile");
+      navigate.navigate("Register-email");
     } else {
       // Display an error message or prevent navigation if no option is selected
     }

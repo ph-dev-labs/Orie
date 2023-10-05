@@ -4,15 +4,11 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity } from "react-native";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
 
-import {
-  setPassword,
-  setConfirmPassword,
-  registerUserAsync
-} from "../Redux/Auth/registerSlice";
+import { setPassword, setConfirmPassword } from "../Redux/Auth/registerSlice";
 
 const CreatePassword = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -21,8 +17,6 @@ const CreatePassword = () => {
   const [error, setError] = useState("");
   const navigate = useNavigation();
   const dispatch = useDispatch();
-
- 
 
   const handlePassword = (text) => {
     setPasswordField(text);
@@ -42,32 +36,15 @@ const CreatePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  // Gather user data from the Redux store
-
- 
-  const completeRegistration = () => {
-    if (passwordField === confirmPasswordField &&validatePassword(passwordField)) {
-      dispatch(setPassword(passwordField))
-      dispatch(setConfirmPassword(confirmPasswordField))
-      const userData = {
-        email: useSelector((state) => state.registration.email),
-        password: passwordField, // Use the updated password field
-        userType: useSelector((state) => state.registration.userType),
-        otp: useSelector((state) => state.registration.otp),
-        number: useSelector((state) => state.registration.number),
-        confirmPassword: confirmPasswordField, // Use the updated confirmPassword field
-      };
-      // Dispatch the registration action
-      dispatch(registerUserAsync(userData))
-        .then(() => {
-          // Optionally, navigate to the next screen upon successful registration
-          navigate("Login");
-        })
-        .catch((error) => {
-          setError("An error occurred during registration.");
-        });
+  const moveToOtp = () => {
+    if (passwordField !== confirmPasswordField) {
+      setError("Passwords do not match");
+    } else if (!validatePassword(passwordField)) {
+      setError("Password criteria not met");
     } else {
-      setError("Password does not meet the criteria.");
+      dispatch(setPassword(passwordField));
+      dispatch(setConfirmPassword(confirmPasswordField));
+      navigate.navigate("Verification");
     }
   };
 
@@ -138,9 +115,9 @@ const CreatePassword = () => {
         </View>
         <View style={styles.btnView}>
           <CustomButton
-            text="Finish Registration"
+            text="Continue"
             type="email"
-            onPress={completeRegistration}
+            onPress={moveToOtp}
           />
           <Text style={styles.text3}>
             By clicking 'Finish Registration', you're agreeing to Orie's{" "}

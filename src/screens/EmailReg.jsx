@@ -34,10 +34,10 @@ const EmailReg = () => {
     navigate.navigate("Register-mobile");
   };
 
-  const moveToVerification = () => {
+  const creatPassword = () => {
     if (emailError === "") {
       dispatch(setEmail(emailAd));
-      navigate.navigate("Verification-email");
+      navigate.navigate("Create-Password");
     } else {
       // You may choose to display an error message here
       // or prevent navigation if the email is invalid
@@ -85,9 +85,9 @@ const EmailReg = () => {
         </View>
         <View style={styles.btnView}>
           <CustomButton
-            text="send verification code"
+            text="Continue"
             type="email"
-            onPress={moveToVerification}
+            onPress={creatPassword}
           />
           <Text style={styles.text3}>
             Already have an account? <Text style={styles.brand}>Login</Text>
