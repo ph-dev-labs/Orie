@@ -1,6 +1,8 @@
 // redux/slices/registrationSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { registerUser } from "../../api/registrationApi";
+import { confirmOtp } from "../../api/otpConfirm";
+
 
 const initialState = {
   email: "",
@@ -19,7 +21,6 @@ export const registerUserAsync = createAsyncThunk(
   async (userData,) => {
     try {
       const result = await registerUser(userData);
-      console.log(result)
       return result;
       
     } catch (error) {
@@ -27,6 +28,17 @@ export const registerUserAsync = createAsyncThunk(
     }
   }
 );
+
+export const confirmOtpAsync = createAsyncThunk(
+  async(email,otp) => {
+    try {
+      const result = await confirmOtp(email, otp)
+      return result
+    } catch (error) {
+      throw error
+    }
+  }
+)
 
 const registrationSlice = createSlice({
   name: "registration",

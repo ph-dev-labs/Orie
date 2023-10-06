@@ -5,12 +5,26 @@ export const registrationApi = createApi({
   endpoints: (builder) => ({
     register: builder.mutation({
       query: (userData) => ({
-        url: '/user', // Update the URL endpoint as needed
+        url: '/user',
         method: 'POST',
         body: userData,
+      }),
+    }),
+    confirmOtp: builder.mutation({
+      query: ({ otp, email }) => ({ // Combine otp and email into an object
+        url: "/confirm",
+        method: "POST",
+        body: { otp, email }, // Send them as an object
+      }),
+    }),
+    login: builder.mutation({
+      query: ({ email, password }) => ({ // Combine email and password into an object
+        url: "/login",
+        method: "POST",
+        body: { email, password }, // Send them as an object
       }),
     }),
   }),
 });
 
-export const { useRegisterMutation } = registrationApi;
+export const { useRegisterMutation, useConfirmOtpMutation, useLoginMutation } = registrationApi;

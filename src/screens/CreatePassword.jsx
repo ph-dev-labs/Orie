@@ -54,14 +54,21 @@ const CreatePassword = () => {
       } else {
         dispatch(setPassword(passwordField));
         dispatch(setConfirmPassword(confirmPasswordField));
-        await dispatch(registerUserAsync(userData)); // post request
-        console.log("Account created successfully");
-        navigate.navigate("Verification");
+        const result =  registerUserAsync(userData); // Send registration request
+  
+        if (result && result.status === 200) {
+          // Registration was successful
+          navigate.navigate("Verification");
+        } else {
+          // Handle registration failure based on status code or error message
+          setError("Registration failed"); // You can set a specific error message here
+        }
       }
     } catch (error) {
       setError(error.message);
     }
   };
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -155,6 +162,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 7,
+    position: "fixed"
   },
   input: {
     flexDirection: "row",
