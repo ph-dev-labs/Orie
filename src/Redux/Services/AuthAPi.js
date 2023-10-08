@@ -4,10 +4,10 @@ export const registrationApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: "http://orieapi.onrender.com/api" }),
   endpoints: (builder) => ({
     register: builder.mutation({
-      query: (userData) => ({
+      query: ({email,phone,password,userType}) => ({
         url: '/user',
         method: 'POST',
-        body: userData,
+        body: {email,phone,password,userType},
       }),
     }),
     confirmOtp: builder.mutation({

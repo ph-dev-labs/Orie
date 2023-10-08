@@ -7,37 +7,37 @@ import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
 import { setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { confirmOtpAsync } from "../Redux/Auth/registerSlice";
+import { confirmOtp } from "../Redux/Auth/registerSlice";
+import { selectRegistration } from "../Redux/Auth/registerSlice";
 
 const Verification = () => {
   // Initialize OTP with empty strings
   const [otpField, setOtpField] = useState(["", "", "", "", ""]);
   const dispatch = useDispatch();
-  const navigate = useNavigation();  
-  const email = useSelector((state) => state.registration.email)
-  const number = useSelector((state) => state.registration.number)
-  const otp = useSelector((state) => state.registration.otp)
-  const stringOtp = otpField.join("")
+  const navigate = useNavigation();
+  const { email } = useSelector(selectRegistration);
+  const { number } = useSelector(selectRegistration);
+  const { otp } = useSelector(selectRegistration);
+  const stringOtp = otpField.join("");
 
- 
+
   const handleInputChange = (text, index) => {
     const updatedOTP = [...otpField];
     updatedOTP[index] = text;
     setOtpField(updatedOTP);
   };
 
-
-  const displayText = email !== '' ? email : number;
+  const displayText = email !== "" ? email : number;
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
 
   const handleOtp = async () => {
     dispatch(setOtp(stringOtp));
-  
+
     try {
-      const result = await confirmOtpAsync(otp, email);
-  
+      const result = dispatch(confirmOtp({email, otp}))
+
       if (result && result.status === 200) {
         // OTP confirmation was successful
         console.log("OTP confirmed successfully");
@@ -52,8 +52,6 @@ const Verification = () => {
       // Handle any other errors that might occur during OTP confirmation
     }
   };
-  
-
 
   return (
     <SafeAreaView style={styles.container}>
@@ -89,7 +87,7 @@ const styles = StyleSheet.create({
   otp: {
     marginTop: 30,
     flexDirection: "column",
-    alignItems: "center"
+    alignItems: "center",
   },
   content: {
     flex: 1,

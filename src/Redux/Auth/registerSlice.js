@@ -1,11 +1,8 @@
-// redux/slices/registrationSlice.js
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { registerUser } from "../../api/registrationApi";
 import { confirmOtp } from "../../api/otpConfirm";
 
-
 const initialState = {
-  email: "",
   password: "",
   userType: "",
   number: "",
@@ -13,32 +10,35 @@ const initialState = {
   otp: "",
   isLoading: false,
   isError: false,
+  email: "",
   errorMessage: "",
 };
 
 export const registerUserAsync = createAsyncThunk(
   "registration/registerUser",
-  async (userData,) => {
+  async ({ email, password, number, userType }, { rejectWithValue }) => {
     try {
-      const result = await registerUser(userData);
+      const result = await registerUser({ email, password, number, userType });
       return result;
-      
     } catch (error) {
-      throw error;
+      // Use rejectWithValue to pass the error message to the payload
+      return rejectWithValue(error.message);
     }
   }
 );
 
 export const confirmOtpAsync = createAsyncThunk(
-  async(email,otp) => {
+  "registration/confirmOtp",
+  async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const result = await confirmOtp(email, otp)
-      return result
+      const result = await confirmOtp({email, otp});
+      return result;
     } catch (error) {
-      throw error
+      // Use rejectWithValue to pass the error message to the payload
+      return rejectWithValue(error.message);
     }
   }
-)
+);
 
 const registrationSlice = createSlice({
   name: "registration",
@@ -82,7 +82,20 @@ const registrationSlice = createSlice({
       .addCase(registerUserAsync.rejected, (state, action) => {
         state.isLoading = false;
         state.isError = true;
-        state.errorMessage = action.error.message;
+        state.errorMessage = action.payload;
+      })
+      .addCase(confirmOtpAsync.pending, (state) => {
+        state.isLoading = true;
+        state.isError = false;
+      })
+      .addCase(confirmOtpAsync.fulfilled, (state) => {
+        state.isLoading = false;
+        // Optionally, handle success here.
+      })
+      .addCase(confirmOtpAsync.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isError = true;
+        state.errorMessage = action.payload;
       });
   },
 });

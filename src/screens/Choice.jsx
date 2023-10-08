@@ -56,17 +56,17 @@ const Choice = () => {
         </View>
         <View style={styles.box}>
           <Holders
-            title="buying"
+            title="buyer"
             icon={<Buy />}
-            selected={selectedOption === "buying"}
-            onPress={() => handleOptionPress("buying")}
+            selected={selectedOption === "buyer"}
+            onPress={() => handleOptionPress("buyer")}
             activeStyle={activeStyles}
           />
           <Holders
-            title="selling"
+            title="seller"
             icon={<Sell />}
-            selected={selectedOption === "selling"}
-            onPress={() => handleOptionPress("selling")}
+            selected={selectedOption === "seller"}
+            onPress={() => handleOptionPress("seller")}
             activeStyle={activeStyles}
           />
         </View>

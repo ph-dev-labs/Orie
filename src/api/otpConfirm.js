@@ -1,10 +1,10 @@
 import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
 
-export const confirmOtp = async (otp, email) => {
+export const confirmOtp = async ({otp, email}) => {
   const [confirmation] = useConfirmOtpMutation();
 
   try {
-    const response = await confirmation(otp, email);
+    const response = await confirmation({otp, email});
 
     if (response.error) {
       // Handle the error, e.g., by throwing an exception

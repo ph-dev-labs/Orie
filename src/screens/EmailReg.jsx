@@ -3,7 +3,10 @@ import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
 import Back from "../../assets/back.svg";
 import { useFonts } from "expo-font";
-import { Raleway_600SemiBold, Raleway_800ExtraBold } from "@expo-google-fonts/raleway";
+import {
+  Raleway_600SemiBold,
+  Raleway_800ExtraBold,
+} from "@expo-google-fonts/raleway";
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
@@ -17,32 +20,36 @@ const EmailReg = () => {
   const [emailAd, setEmailAd] = useState("");
   const [emailError, setEmailError] = useState("");
 
-  const handleChange = (text) => {
-    setEmailAd(text);
-
+  const validateEmail = (text) => {
     // Regular expression for email validation
     const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailRegex.test(text);
+  };
 
-    if (!emailRegex.test(text)) {
-      setEmailError("Invalid email address");
-    } else {
-      setEmailError("");
-    }
+  const handleChange = (text) => {
+    const isValidEmail = validateEmail(text);
+    setEmailError(isValidEmail ? "" : "Invalid email address");
+    setEmailAd(text);    
   };
 
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
 
-  const creatPassword = () => {
+  const dispatchEmail = () => {
     if (emailError === "") {
-      dispatch(setEmail(emailAd));
+      dispatch(setEmail(emailAd))
       navigate.navigate("Create-Password");
     } else {
       // You may choose to display an error message here
       // or prevent navigation if the email is invalid
     }
   };
+  
+  
+  
+  
+  
 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
@@ -68,7 +75,7 @@ const EmailReg = () => {
           <View style={styles.input}>
             <CustomInputField
               placeholder="Enter email address"
-              keyboardType={"email-address"}
+              keyboardType={"default"}
               onChangeText={handleChange}
               value={emailAd}
               error={emailError}
@@ -84,11 +91,7 @@ const EmailReg = () => {
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton
-            text="Continue"
-            type="email"
-            onPress={creatPassword}
-          />
+          <CustomButton text="Continue" type="email" onPress={dispatchEmail} />
           <Text style={styles.text3}>
             Already have an account? <Text style={styles.brand}>Login</Text>
           </Text>
@@ -100,7 +103,6 @@ const EmailReg = () => {
 
 export default EmailReg;
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 24,
     flexDirection: "column",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
   },
   holder: {
     height: 30,
@@ -181,5 +183,4 @@ const styles = StyleSheet.create({
   input: {
     marginTop: 25,
   },
- 
 });

@@ -9,7 +9,11 @@ import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
 import { registerUserAsync } from "../Redux/Auth/registerSlice";
 
-import { setPassword, setConfirmPassword } from "../Redux/Auth/registerSlice";
+import {
+  setPassword,
+  setConfirmPassword,
+  selectRegistration,
+} from "../Redux/Auth/registerSlice";
 
 const CreatePassword = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -29,46 +33,55 @@ const CreatePassword = () => {
     return passwordRegex.test(password);
   };
 
-  const userData = {
-    email: useSelector((state) => state.registration.emai),
-    number: useSelector((state) => state.registration.number),
-    userType: useSelector((state) => state.registration.userType),
-    password: useSelector((state) => state.registration.password)
-  }
+  const { email, number, userType, password } = useSelector(selectRegistration);
 
   const handleConfirmPassword = (text) => {
     setConfirmPasswordField(text);
   };
- 
+
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
- 
+  const { isError, errorMessage } = useSelector(selectRegistration);
+
   const moveToOtp = async () => {
     try {
+      // Reset any previous errors
+      setError("");
+
+      // Check if passwords match
       if (passwordField !== confirmPasswordField) {
         setError("Passwords do not match");
-      } else if (!validatePassword(passwordField)) {
+        return;
+      }
+
+      // Validate password
+      if (!validatePassword(passwordField)) {
         setError("Password criteria not met");
+        return;
+      }
+
+      // Dispatch password and confirmPassword to Redux
+      dispatch(setPassword(passwordField));
+      dispatch(setConfirmPassword(confirmPasswordField));
+
+      // Dispatch the registration action and wait for it to complete
+      dispatch(
+        registerUserAsync({ email, password: passwordField, number, userType })
+      ); // Assuming you have imported and configured Redux Toolkit's 'getState' function
+
+      // After the registration action is completed, check if isError is true
+      if (isError) {
+        setError(errorMessage);
       } else {
-        dispatch(setPassword(passwordField));
-        dispatch(setConfirmPassword(confirmPasswordField));
-        const result =  registerUserAsync(userData); // Send registration request
-  
-        if (result && result.status === 200) {
-          // Registration was successful
-          navigate.navigate("Verification");
-        } else {
-          // Handle registration failure based on status code or error message
-          setError("Registration failed"); // You can set a specific error message here
-        }
+        navigate.navigate("Verification");
       }
     } catch (error) {
       setError(error.message);
     }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -135,11 +148,7 @@ const CreatePassword = () => {
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton
-            text="Continue"
-            type="email"
-            onPress={moveToOtp}
-          />
+          <CustomButton text="Continue" type="email" onPress={moveToOtp} />
           <Text style={styles.text3}>
             By clicking 'Finish Registration', you're agreeing to Orie's{" "}
             <Text style={styles.brand}>Terms and Conditions</Text> and their{" "}
@@ -162,7 +171,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 7,
-    position: "fixed"
+    position: "fixed",
   },
   input: {
     flexDirection: "row",
