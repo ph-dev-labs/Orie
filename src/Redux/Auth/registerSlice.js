@@ -16,9 +16,10 @@ const initialState = {
 
 export const registerUserAsync = createAsyncThunk(
   "registration/registerUser",
-  async ({ email, password, number, userType }, { rejectWithValue }) => {
+  async (userData,) => {
     try {
-      const result = await registerUser({ email, password, number, userType });
+      const result = await registerUser(userData);
+      console.log(result)
       return result;
     } catch (error) {
       // Use rejectWithValue to pass the error message to the payload
@@ -28,10 +29,10 @@ export const registerUserAsync = createAsyncThunk(
 );
 
 export const confirmOtpAsync = createAsyncThunk(
-  "registration/confirmOtp",
+  'registration/confirmOtp',
   async ({ email, otp }, { rejectWithValue }) => {
     try {
-      const result = await confirmOtp({email, otp});
+      const result = await confirmOtp(email, otp);
       return result;
     } catch (error) {
       // Use rejectWithValue to pass the error message to the payload

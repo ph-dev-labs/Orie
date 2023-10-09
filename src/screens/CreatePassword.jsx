@@ -59,29 +59,17 @@ const CreatePassword = () => {
       // Validate password
       if (!validatePassword(passwordField)) {
         setError("Password criteria not met");
-        return;
-      }
-
-      // Dispatch password and confirmPassword to Redux
-      dispatch(setPassword(passwordField));
-      dispatch(setConfirmPassword(confirmPasswordField));
-
-      // Dispatch the registration action and wait for it to complete
-      dispatch(
-        registerUserAsync({ email, password: passwordField, number, userType })
-      ); // Assuming you have imported and configured Redux Toolkit's 'getState' function
-
-      // After the registration action is completed, check if isError is true
-      if (isError) {
-        setError(errorMessage);
       } else {
+        dispatch(setPassword(passwordField));
+        dispatch(setConfirmPassword(confirmPasswordField));
+        await dispatch(registerUserAsync(userData)); // post request
+        console.log("Account created successfully");
         navigate.navigate("Verification");
       }
     } catch (error) {
       setError(error.message);
     }
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -171,7 +159,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 7,
-    position: "fixed",
   },
   input: {
     flexDirection: "row",

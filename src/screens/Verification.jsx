@@ -7,51 +7,25 @@ import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
 import { setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { confirmOtp } from "../Redux/Auth/registerSlice";
-import { selectRegistration } from "../Redux/Auth/registerSlice";
 
 const Verification = () => {
   // Initialize OTP with empty strings
-  const [otpField, setOtpField] = useState(["", "", "", "", ""]);
+  const [otp, setOTP] = useState(["", "", "", "", ""]);
   const dispatch = useDispatch();
   const navigate = useNavigation();
-  const { email } = useSelector(selectRegistration);
-  const { number } = useSelector(selectRegistration);
-  const { otp } = useSelector(selectRegistration);
-  const stringOtp = otpField.join("");
-
-
+ 
   const handleInputChange = (text, index) => {
-    const updatedOTP = [...otpField];
+    const updatedOTP = [...otp];
     updatedOTP[index] = text;
-    setOtpField(updatedOTP);
+    setOTP(updatedOTP);
   };
 
-  const displayText = email !== "" ? email : number;
+  const email = useSelector((state) => state.registration.email)
+  const number = useSelector((state) => state.registration.number)
+  const displayText = email !== '' ? email : number;
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
-
-  const handleOtp = async () => {
-    dispatch(setOtp(stringOtp));
-
-    try {
-      const result = dispatch(confirmOtp({email, otp}))
-
-      if (result && result.status === 200) {
-        // OTP confirmation was successful
-        console.log("OTP confirmed successfully");
-        // Navigate to the next screen or perform any other actions as needed
-      } else {
-        // Handle OTP confirmation failure based on status code or error message
-        console.error("OTP confirmation failed");
-        // Set an error message or perform error handling as necessary
-      }
-    } catch (error) {
-      console.error(error);
-      // Handle any other errors that might occur during OTP confirmation
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -63,14 +37,14 @@ const Verification = () => {
           <Text style={styles.number}>{displayText}</Text>
         </Text>
         <View style={styles.otp}>
-          <SplitField otp={otpField} handleInputChange={handleInputChange} />
+          <SplitField otp={otp} handleInputChange={handleInputChange} />
           <Text style={styles.text3}>
             Didn't get a code <Text style={styles.brand}>Resend in 59s</Text>
           </Text>
         </View>
       </View>
 
-      <CustomButton text="Finish registration" onPress={handleOtp} />
+      <CustomButton text="Finish registration" onPress={()=>{console.log("successful")}} />
     </SafeAreaView>
   );
 };
