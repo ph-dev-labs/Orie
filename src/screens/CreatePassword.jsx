@@ -7,7 +7,7 @@ import { TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
-import { registerUserAsync } from "../Redux/Auth/registerSlice";
+import { useRegisterMutation } from "../Redux/Services/AuthAPi";
 
 import {
   setPassword,
@@ -27,13 +27,14 @@ const CreatePassword = () => {
     setPasswordField(text);
   };
 
-  const validatePassword = (password) => {
-    const passwordRegex =
-      /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#])[0-9a-zA-Z@#]{8,16}$/;
-    return passwordRegex.test(password);
+  const { email, number, userType } = useSelector(selectRegistration);
+  const [register] = useRegisterMutation();
+  const userData = {
+    email,
+    number,
+    userType,
+    password: passwordField,
   };
-
-  const { email, number, userType, password } = useSelector(selectRegistration);
 
   const handleConfirmPassword = (text) => {
     setConfirmPasswordField(text);
@@ -43,9 +44,7 @@ const CreatePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const { isError, errorMessage } = useSelector(selectRegistration);
-
-  const moveToOtp = async () => {
+  const handleRegistration = async () => {
     try {
       // Reset any previous errors
       setError("");
@@ -57,19 +56,39 @@ const CreatePassword = () => {
       }
 
       // Validate password
-      if (!validatePassword(passwordField)) {
+      const passwordRegex =
+        /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#])[0-9a-zA-Z@#]{8,16}$/;
+      if (!passwordRegex.test(passwordField)) {
         setError("Password criteria not met");
-      } else {
-        dispatch(setPassword(passwordField));
-        dispatch(setConfirmPassword(confirmPasswordField));
-        await dispatch(registerUserAsync(userData)); // post request
-        console.log("Account created successfully");
+        return;
+      }
+
+      // Create user data object
+
+      // Call your registration function here
+
+      const stringified = JSON.stringify(userData);
+
+      // Check for registration success or failure
+      const response = await register(stringified);
+
+      if (response.status === 200) {
+        // Registration successful
+        console.log(response)
         navigate.navigate("Verification");
+      } else {
+        // Registration failed, handle the error message
+        const errorData = await response.json();
+        const errorMessage = errorData.error || "Registration failed";
+        setError(errorMessage);
       }
     } catch (error) {
-      setError(error.message);
+      // Handle any other unexpected errors
+      setError("An error occurred during registration");
+      console.error(error);
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -136,7 +155,11 @@ const CreatePassword = () => {
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton text="Continue" type="email" onPress={moveToOtp} />
+          <CustomButton
+            text="Continue"
+            type="email"
+            onPress={handleRegistration}
+          />
           <Text style={styles.text3}>
             By clicking 'Finish Registration', you're agreeing to Orie's{" "}
             <Text style={styles.brand}>Terms and Conditions</Text> and their{" "}
@@ -158,7 +181,9 @@ const styles = StyleSheet.create({
   eyeIcon: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 7,
+    marginTop: 8,
+    height: 20,
+    width: 20,
   },
   input: {
     flexDirection: "row",

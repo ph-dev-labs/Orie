@@ -14,32 +14,6 @@ const initialState = {
   errorMessage: "",
 };
 
-export const registerUserAsync = createAsyncThunk(
-  "registration/registerUser",
-  async (userData,) => {
-    try {
-      const result = await registerUser(userData);
-      console.log(result)
-      return result;
-    } catch (error) {
-      // Use rejectWithValue to pass the error message to the payload
-      return rejectWithValue(error.message);
-    }
-  }
-);
-
-export const confirmOtpAsync = createAsyncThunk(
-  'registration/confirmOtp',
-  async ({ email, otp }, { rejectWithValue }) => {
-    try {
-      const result = await confirmOtp(email, otp);
-      return result;
-    } catch (error) {
-      // Use rejectWithValue to pass the error message to the payload
-      return rejectWithValue(error.message);
-    }
-  }
-);
 
 const registrationSlice = createSlice({
   name: "registration",
@@ -70,35 +44,7 @@ const registrationSlice = createSlice({
       state.isLoading = action.payload;
     },
   },
-  extraReducers: (builder) => {
-    builder
-      .addCase(registerUserAsync.pending, (state) => {
-        state.isLoading = true;
-        state.isError = false;
-      })
-      .addCase(registerUserAsync.fulfilled, (state) => {
-        state.isLoading = false;
-        // Optionally, handle success here.
-      })
-      .addCase(registerUserAsync.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.errorMessage = action.payload;
-      })
-      .addCase(confirmOtpAsync.pending, (state) => {
-        state.isLoading = true;
-        state.isError = false;
-      })
-      .addCase(confirmOtpAsync.fulfilled, (state) => {
-        state.isLoading = false;
-        // Optionally, handle success here.
-      })
-      .addCase(confirmOtpAsync.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.errorMessage = action.payload;
-      });
-  },
+  
 });
 
 export const {
