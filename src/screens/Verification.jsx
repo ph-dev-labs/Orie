@@ -7,12 +7,39 @@ import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
 import { setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
+import AsyncHolder from "../components/AsyncHolder";
+import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
 
 const Verification = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
+  const [visible, setVisble] = useState(false)
   const dispatch = useDispatch();
   const navigate = useNavigation();
+const [confirmOtp] = useConfirmOtpMutation()
+
+const stringOtp = otp.join("")
+
+  const handleVerification = async () => {
+    const payload = {
+      email: email,
+      otp: stringOtp
+    }
+
+    const response = await confirmOtp(payload).unwrap()
+    try {
+      if(response.status === 200) {
+        setVisble(true)
+        setTimeout(() => {
+          setVisble(false)
+          navigate.navigate("Login")
+        }, 1500)
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
  
   const handleInputChange = (text, index) => {
     const updatedOTP = [...otp];
@@ -44,7 +71,7 @@ const Verification = () => {
         </View>
       </View>
 
-      <CustomButton text="Finish registration" onPress={()=>{console.log("successful")}} />
+      <CustomButton text="Finish registration" onPress={handleVerification} />
     </SafeAreaView>
   );
 };

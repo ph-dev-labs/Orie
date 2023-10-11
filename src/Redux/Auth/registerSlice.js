@@ -1,6 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { registerUser } from "../../api/registrationApi";
-import { confirmOtp } from "../../api/otpConfirm";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   password: "",

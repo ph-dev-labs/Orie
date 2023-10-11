@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native";
 import Back from "../../assets/back.svg";
@@ -12,6 +12,7 @@ import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { setEmail } from "../Redux/Auth/registerSlice";
 import { useDispatch } from "react-redux";
+import { useCheckEmailMutation } from "../Redux/Services/AuthAPi";
 
 const EmailReg = () => {
   const navigate = useNavigation();
@@ -19,18 +20,48 @@ const EmailReg = () => {
 
   const [emailAd, setEmailAd] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [checkEmail] = useCheckEmailMutation();
+
+  // Regular expression for email validation
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
   const validateEmail = (text) => {
-    // Regular expression for email validation
-    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     return emailRegex.test(text);
   };
 
   const handleChange = (text) => {
     const isValidEmail = validateEmail(text);
     setEmailError(isValidEmail ? "" : "Invalid email address");
-    setEmailAd(text);    
+    setEmailAd(text);
   };
+
+  useEffect(() => {
+    const handleEmailCheck = async (email) => {
+      setEmailError("")
+      if (validateEmail(email)) {
+        const payload = {
+          email: email,
+        };
+
+        try {
+          const response = await checkEmail(payload).unwrap();
+          if (response.status === 200) {
+            setIsEmailAvailable(true);
+            setEmailError("");
+          }
+        } catch (error) {
+          setIsEmailAvailable(false);
+          setEmailError(error.data.msg);
+        }
+      } else {
+        setEmailError("Invalid email address");
+        setIsEmailAvailable(false);
+      }
+    };
+
+    handleEmailCheck(emailAd);
+  }, [emailAd]);
 
   const handlePress = () => {
     navigate.navigate("Register-mobile");
@@ -38,18 +69,10 @@ const EmailReg = () => {
 
   const dispatchEmail = () => {
     if (emailError === "") {
-      dispatch(setEmail(emailAd))
+      dispatch(setEmail(emailAd));
       navigate.navigate("Create-Password");
-    } else {
-      // You may choose to display an error message here
-      // or prevent navigation if the email is invalid
     }
   };
-  
-  
-  
-  
-  
 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,

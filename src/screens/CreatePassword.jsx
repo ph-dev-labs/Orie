@@ -7,34 +7,25 @@ import { TouchableOpacity } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
+import AsyncHolder from "../components/AsyncHolder";
 import { useRegisterMutation } from "../Redux/Services/AuthAPi";
-
-import {
-  setPassword,
-  setConfirmPassword,
-  selectRegistration,
-} from "../Redux/Auth/registerSlice";
+import { selectRegistration } from "../Redux/Auth/registerSlice";
 
 const CreatePassword = () => {
   const [showPassword, setShowPassword] = useState(true);
   const [passwordField, setPasswordField] = useState("");
   const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const [error, setError] = useState("");
+  const [authError, setAuthError] = useState("");
+  const [visible, setVisible] = useState(false);
   const navigate = useNavigation();
-  const dispatch = useDispatch();
-
   const handlePassword = (text) => {
     setPasswordField(text);
   };
 
+
   const { email, number, userType } = useSelector(selectRegistration);
   const [register] = useRegisterMutation();
-  const userData = {
-    email,
-    number,
-    userType,
-    password: passwordField,
-  };
 
   const handleConfirmPassword = (text) => {
     setConfirmPasswordField(text);
@@ -44,54 +35,80 @@ const CreatePassword = () => {
     setShowPassword(!showPassword);
   };
 
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#])[0-9a-zA-Z@#]{8,16}$/;
+    return passwordRegex.test(password);
+  };
   const handleRegistration = async () => {
     try {
-      // Reset any previous errors
-      setError("");
+      setError(""); // Reset any previous errors
 
-      // Check if passwords match
       if (passwordField !== confirmPasswordField) {
         setError("Passwords do not match");
         return;
       }
 
-      // Validate password
-      const passwordRegex =
-        /^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[@#])[0-9a-zA-Z@#]{8,16}$/;
-      if (!passwordRegex.test(passwordField)) {
+      if (!validatePassword(passwordField)) {
         setError("Password criteria not met");
         return;
       }
 
-      // Create user data object
+      const userData = {
+        email,
+        number,
+        userType,
+        password: passwordField,
+      };
 
-      // Call your registration function here
+      // Call the register function and handle the result
+      const result = await register(userData).unwrap();
+      handleRegistrationResult(result);
+    } catch (error) {
+      // Handle any unexpected errors
+      handleError(error);
+    }
+  };
 
-      const stringified = JSON.stringify(userData);
-
-      // Check for registration success or failure
-      const response = await register(stringified);
-
-      if (response.status === 200) {
-        // Registration successful
-        console.log(response)
-        navigate.navigate("Verification");
-      } else {
-        // Registration failed, handle the error message
-        const errorData = await response.json();
-        const errorMessage = errorData.error || "Registration failed";
-        setError(errorMessage);
+  const handleRegistrationResult = async (result) => {
+    try {
+      if (result) {
+        const responseData = await result;
+        if (responseData) {
+          showSuccessMessageAndRedirect();
+        } 
       }
     } catch (error) {
-      // Handle any other unexpected errors
-      setError("An error occurred during registration");
-      console.error(error);
+      handleError(error);
     }
+  };
+
+
+  const handleError = (error) => {
+    if (error.data) {
+      // If there is a response from the server
+      const responseData = error.data;
+      if (responseData && responseData.data && responseData.data.errorMsg) {
+        setError(responseData.data.errorMsg);
+      } 
+    } else {
+      setError("An unexpected error occurred");
+    }
+  };
+
+  const showSuccessMessageAndRedirect = () => {
+    setVisible(true);
+    setTimeout(() => {
+      setVisible(false);
+      navigate.navigate("Verification");
+    }, 2000);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
+        <View style={styles.msgHolder}><AsyncHolder visible={visible} text="Otp successful sent" /></View>
+        
         <View>
           <View style={styles.hold}>
             <View style={styles.holder}>
@@ -155,11 +172,7 @@ const CreatePassword = () => {
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton
-            text="Continue"
-            type="email"
-            onPress={handleRegistration}
-          />
+          <CustomButton text="Continue" onPress={handleRegistration} />
           <Text style={styles.text3}>
             By clicking 'Finish Registration', you're agreeing to Orie's{" "}
             <Text style={styles.brand}>Terms and Conditions</Text> and their{" "}
@@ -181,9 +194,7 @@ const styles = StyleSheet.create({
   eyeIcon: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 8,
-    height: 20,
-    width: 20,
+    marginBottom: 7,
   },
   input: {
     flexDirection: "row",
@@ -221,6 +232,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
+  msgHolder: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    backgroundColor: "red"
+  },
+
   text2: {
     fontFamily: "Raleway_600SemiBold",
     color: "#B4B4B4",
@@ -246,6 +265,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 20,
     marginBottom: 10,
+    position: "relative"
   },
 
   brand: {
@@ -253,11 +273,10 @@ const styles = StyleSheet.create({
   },
 
   hold: {
-    marginTop: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: 230,
+    width: 250,
   },
 
   Header: {
