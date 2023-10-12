@@ -7,7 +7,7 @@ const AsyncHolder = ({text, visible}) => {
   return (
     <Animatable.View
     animation="slideInDown"
-    duration={1000}
+    duration={1700}
     style={{
       position: 'absolute',
       backgroundColor: '#1B1D1E',

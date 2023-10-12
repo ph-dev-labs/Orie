@@ -10,9 +10,10 @@ import {
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
-import { setEmail } from "../Redux/Auth/registerSlice";
+import { setEmail, setLoading } from "../Redux/Auth/registerSlice";
 import { useDispatch } from "react-redux";
 import { useCheckEmailMutation } from "../Redux/Services/AuthAPi";
+import Loader from "./Loader";
 
 const EmailReg = () => {
   const navigate = useNavigation();
@@ -21,6 +22,7 @@ const EmailReg = () => {
   const [emailAd, setEmailAd] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [checkEmail] = useCheckEmailMutation();
 
   // Regular expression for email validation
@@ -38,31 +40,31 @@ const EmailReg = () => {
 
   useEffect(() => {
     const handleEmailCheck = async (email) => {
-      setEmailError("")
-      if (validateEmail(email)) {
-        const payload = {
-          email: email,
-        };
-
-        try {
+      try {
+        setEmailError(""); // Reset email error message
+  
+        if (validateEmail(email)) {
+          const payload = { email };
+          setIsLoading(true); // Set loading to true while making the request
+  
           const response = await checkEmail(payload).unwrap();
+  
           if (response.status === 200) {
             setIsEmailAvailable(true);
-            setEmailError("");
-          }
-        } catch (error) {
-          setIsEmailAvailable(false);
-          setEmailError(error.data.msg);
-        }
-      } else {
-        setEmailError("Invalid email address");
+          } 
+        } 
+  
+        setIsLoading(false); // Set loading back to false when done
+      } catch (error) {
+        setIsLoading(false); // Ensure loading is set to false in case of an error
         setIsEmailAvailable(false);
+        setEmailError("Email already exists");
       }
     };
-
+  
     handleEmailCheck(emailAd);
   }, [emailAd]);
-
+  
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
@@ -74,10 +76,13 @@ const EmailReg = () => {
     }
   };
 
-  const [fontsLoaded] = useFonts({
-    Raleway_600SemiBold,
-    Raleway_800ExtraBold,
-  });
+  if(isLoading) {
+    return (
+      <SafeAreaView style={{flex:1}}>
+        <Loader />
+      </SafeAreaView>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>

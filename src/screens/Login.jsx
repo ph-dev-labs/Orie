@@ -17,19 +17,49 @@ import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { CheckBox } from "@rneui/themed";
+import { useUserLoginMutation } from "../Redux/Services/AuthAPi";
+import { loginFailure, loginSuccess, selectUser } from "../Redux/Auth/Login";
+import { useSelector, dispatch } from "react-redux";
+
 
 const Login = () => {
   const navigate = useNavigation();
   const [showPassword, setShowPassword] = useState(true);
   const [checked, setChecked] = React.useState(true);
   const toggleCheckbox = () => setChecked(!checked);
-
+  const [loginApi] = useUserLoginMutation();
+  const user = useSelector(selectUser)
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const moveToVerification = () => {
-    navigate.navigate("");
+  const moveToShopPage = async () => {
+    try {
+      const response = await loginApi({ email, password }).unwrap();
+
+      const data = response.data;
+
+      if (data.status === "error") {
+        console.log(
+          "There is an error, here is the message:",
+          data.msg ? data.msg : "Something went wrong"
+        );
+        dispatch(loginFailure(data.msg ? data.msg : "Something went wrong")); // Dispatch error message
+        return;
+      }
+
+      // Save token in AsyncStorage
+      AsyncStorage.setItem(ASYNC_STORAGE_KEY, data.data.token).catch(
+        (error) => {
+          console.error("Error storing token in AsyncStorage:", error);
+        }
+      );
+      dispatch(loginSuccess(data.data));
+
+      navigate("/dashboard");
+    } catch (error) {
+      dispatch(loginFailure(error.message));
+    }
   };
 
   const [fontsLoaded] = useFonts({
@@ -49,7 +79,7 @@ const Login = () => {
           <Text style={styles.text2}>
             Enter your email or number and password
           </Text>
-         <View style={styles.inputHolder}>
+          <View style={styles.inputHolder}>
             <View style={styles.input}>
               <CustomInputField
                 placeholder="Enter email or phone number"
@@ -75,8 +105,21 @@ const Login = () => {
             </View>
           </View>
           <View style={{ transform: [{ translateY: -35 }] }}>
-            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-evenly", transform: [{ translateX: -20 }] }}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-evenly",
+                  transform: [{ translateX: -20 }],
+                }}
+              >
                 <CheckBox
                   checked={checked}
                   onPress={toggleCheckbox}
@@ -91,12 +134,12 @@ const Login = () => {
               <Text style={styles.text3i}>Forgot Password</Text>
             </View>
           </View>
-        </View> 
+        </View>
         <View style={styles.btnView}>
           <CustomButton
             text="Finish Registration"
             type="email"
-            onPress={moveToVerification}
+            onPress={moveToShopPage}
           />
           <Text style={styles.text3}>
             By clicking ‘finish registeration’, you’re agreeing to Orie’s{" "}
@@ -171,7 +214,7 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 13,
     textAlign: "center",
-    lineHeight: 20
+    lineHeight: 20,
   },
 
   brand: {

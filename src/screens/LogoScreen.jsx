@@ -1,6 +1,6 @@
 import React, {useEffect, useState}  from 'react';
 import { StyleSheet, SafeAreaView, View, Text, ActivityIndicator, Image } from 'react-native';
-import { Raleway_400Regular } from '@expo-google-fonts/raleway';
+import { Raleway_400Regular, Raleway_600SemiBold } from '@expo-google-fonts/raleway';
 import Logo from "../../assets/Logo.svg"
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
@@ -13,7 +13,7 @@ const LogoScreen = () => {
   const [animationComplete, setAnimationComplete] = useState(false);
 
   const [fontsLoaded] = useFonts({
-    Raleway_400Regular,
+    Raleway_400Regular, Raleway_600SemiBold
   });
 
   const navigation = useNavigation()
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     height: 120,
   },
   text: {
-    fontFamily: 'Raleway_400Regular',
+    fontFamily: "Raleway_600SemiBold",
     fontSize: 14,
     fontWeight: 'bold',
     color: 'white',

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useFonts } from "expo-font";
 import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
@@ -9,50 +9,91 @@ import { setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncHolder from "../components/AsyncHolder";
 import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
+import { TouchableOpacity } from "react-native";
 
 const Verification = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
-  const [visible, setVisble] = useState(false)
+  const [visible, setVisble] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigation();
-const [confirmOtp] = useConfirmOtpMutation()
+  const [confirmOtp] = useConfirmOtpMutation();
+  const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
+  const [isCounting, setIsCounting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-const stringOtp = otp.join("")
+  const stringOtp = otp.join("");
+
+  const startCountdown = () => {
+    setIsCounting(true);
+    setCountdown(60);
+  };
+
+  startCountdown();
+  const resetCountdown = () => {
+    setIsCounting(false);
+  };
+
+  useEffect(() => {
+    let timer;
+
+    if (isCounting) {
+      timer = setInterval(() => {
+        if (countdown > 0) {
+          setCountdown(countdown - 1);
+        } else {
+          setIsCounting(false);
+          clearInterval(timer);
+        }
+      }, 1000);
+    }
+
+    return () => clearInterval(timer);
+  }, [countdown, isCounting]);
 
   const handleVerification = async () => {
     const payload = {
       email: email,
-      otp: stringOtp
-    }
+      otp: stringOtp,
+    };
+    setIsLoading(true);
+    const response = await confirmOtp(payload).unwrap();
 
-    const response = await confirmOtp(payload).unwrap()
     try {
-      if(response.status === 200) {
-        setVisble(true)
+      if (response.status === 200) {
+        setIsLoading(false);
+        setVisble(true);
         setTimeout(() => {
-          setVisble(false)
-          navigate.navigate("Login")
-        }, 1500)
+          setVisble(false);
+          navigate.navigate("Login");
+        }, 1500);
       }
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      setIsLoading(false);
     }
-  }
+  };
 
- 
   const handleInputChange = (text, index) => {
     const updatedOTP = [...otp];
     updatedOTP[index] = text;
     setOTP(updatedOTP);
   };
 
-  const email = useSelector((state) => state.registration.email)
-  const number = useSelector((state) => state.registration.number)
-  const displayText = email !== '' ? email : number;
+  const email = useSelector((state) => state.registration.email);
+  const number = useSelector((state) => state.registration.number);
+  const displayText = email !== "" ? email : number;
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,9 +106,16 @@ const stringOtp = otp.join("")
         </Text>
         <View style={styles.otp}>
           <SplitField otp={otp} handleInputChange={handleInputChange} />
-          <Text style={styles.text3}>
-            Didn't get a code <Text style={styles.brand}>Resend in 59s</Text>
-          </Text>
+          <TouchableOpacity disabled={isCounting}>
+            <Text style={styles.text3}>
+              Didn't get a code{" "}
+              <Text style={styles.brand}>
+                {isCounting
+                  ? `click to resend otp in ${countdown}`
+                  : "click to resend otp"}
+              </Text>
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 

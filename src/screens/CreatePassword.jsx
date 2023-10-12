@@ -10,6 +10,7 @@ import Eye from "../../assets/eye.svg";
 import AsyncHolder from "../components/AsyncHolder";
 import { useRegisterMutation } from "../Redux/Services/AuthAPi";
 import { selectRegistration } from "../Redux/Auth/registerSlice";
+import Loader from "./Loader";
 
 const CreatePassword = () => {
   const [showPassword, setShowPassword] = useState(true);
@@ -17,6 +18,7 @@ const CreatePassword = () => {
   const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const [error, setError] = useState("");
   const [authError, setAuthError] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
   const [visible, setVisible] = useState(false);
   const navigate = useNavigation();
   const handlePassword = (text) => {
@@ -43,24 +45,26 @@ const CreatePassword = () => {
   const handleRegistration = async () => {
     try {
       setError(""); // Reset any previous errors
-
+  
       if (passwordField !== confirmPasswordField) {
         setError("Passwords do not match");
         return;
       }
-
+  
       if (!validatePassword(passwordField)) {
         setError("Password criteria not met");
         return;
       }
-
+  
       const userData = {
         email,
         number,
         userType,
         password: passwordField,
       };
-
+  
+      setIsLoading(true); // Set loading to true while processing
+  
       // Call the register function and handle the result
       const result = await register(userData).unwrap();
       handleRegistrationResult(result);
@@ -69,20 +73,22 @@ const CreatePassword = () => {
       handleError(error);
     }
   };
-
+  
   const handleRegistrationResult = async (result) => {
     try {
+      setIsLoading(false); // Always set isLoading to false, whether it succeeds or fails
+  
       if (result) {
         const responseData = await result;
         if (responseData) {
           showSuccessMessageAndRedirect();
         } 
-      }
+      } 
     } catch (error) {
       handleError(error);
     }
   };
-
+  
 
   const handleError = (error) => {
     if (error.data) {
@@ -103,6 +109,14 @@ const CreatePassword = () => {
       navigate.navigate("Verification");
     }, 2000);
   };
+
+  if(isLoading) {
+    return (
+      <SafeAreaView style={{flex:1}}>
+        <Loader />
+      </SafeAreaView>
+    )
+  }
 
   return (
     <SafeAreaView style={styles.container}>
