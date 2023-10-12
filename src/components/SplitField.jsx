@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
+import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 
 const SplitField = ({ otp, handleInputChange }) => {
   const inputRefs = useRef([]); // Array of refs for OTP input fields
@@ -72,6 +73,7 @@ const styles = StyleSheet.create({
     borderColor: "#B4B4B4",
     textAlign: "center",
     borderRadius: 8,
-    margin: 5
+    margin: 5,
+    fontFamily: "Raleway_600SemiBold"
   },
 });

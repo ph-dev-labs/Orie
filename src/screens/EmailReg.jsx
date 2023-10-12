@@ -22,7 +22,6 @@ const EmailReg = () => {
   const [emailAd, setEmailAd] = useState("");
   const [emailError, setEmailError] = useState("");
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
   const [checkEmail] = useCheckEmailMutation();
 
   // Regular expression for email validation
@@ -42,29 +41,25 @@ const EmailReg = () => {
     const handleEmailCheck = async (email) => {
       try {
         setEmailError(""); // Reset email error message
-  
+
         if (validateEmail(email)) {
           const payload = { email };
-          setIsLoading(true); // Set loading to true while making the request
-  
+
           const response = await checkEmail(payload).unwrap();
-  
+
           if (response.status === 200) {
             setIsEmailAvailable(true);
-          } 
-        } 
-  
-        setIsLoading(false); // Set loading back to false when done
+          }
+        }
       } catch (error) {
-        setIsLoading(false); // Ensure loading is set to false in case of an error
         setIsEmailAvailable(false);
         setEmailError("Email already exists");
       }
     };
-  
+
     handleEmailCheck(emailAd);
   }, [emailAd]);
-  
+
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
@@ -75,14 +70,6 @@ const EmailReg = () => {
       navigate.navigate("Create-Password");
     }
   };
-
-  if(isLoading) {
-    return (
-      <SafeAreaView style={{flex:1}}>
-        <Loader />
-      </SafeAreaView>
-    )
-  }
 
   return (
     <SafeAreaView style={styles.container}>

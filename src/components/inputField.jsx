@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, Text, StyleSheet } from 'react-native';
 import PropTypes from 'prop-types';
 import { useFonts } from 'expo-font';
-import { Raleway_600SemiBold } from '@expo-google-fonts/raleway';
+import { Raleway_600SemiBold,  } from '@expo-google-fonts/raleway';
 
 
 const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyboardType, secureTextEntry }) => {
@@ -68,6 +68,7 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
       color: 'red', // Error text color
       fontSize: 12,
       marginTop: 4,
+      fontFamily: "Raleway_600SemiBold"
     },
   });
   

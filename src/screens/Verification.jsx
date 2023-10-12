@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, StyleSheet, Text, View } from "react-native";
+import {
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+} from "react-native";
 import { useFonts } from "expo-font";
 import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import { useNavigation } from "@react-navigation/native";
@@ -7,20 +13,20 @@ import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
 import { setOtp } from "../Redux/Auth/registerSlice";
 import { useDispatch, useSelector } from "react-redux";
-import AsyncHolder from "../components/AsyncHolder";
 import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
-import { TouchableOpacity } from "react-native";
+import Loader from "./Loader";// Import your Loader component
 
 const Verification = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
-  const [visible, setVisble] = useState(false);
+  const [visible, setVisible] = useState(false); // Correct the typo in variable name
   const dispatch = useDispatch();
   const navigate = useNavigation();
   const [confirmOtp] = useConfirmOtpMutation();
   const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
   const [isCounting, setIsCounting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  
 
   const stringOtp = otp.join("");
 
@@ -29,9 +35,14 @@ const Verification = () => {
     setCountdown(60);
   };
 
-  startCountdown();
+  // Move startCountdown outside of useEffect for a one-time start
+  useEffect(() => {
+    startCountdown();
+  }, []);
+
   const resetCountdown = () => {
     setIsCounting(false);
+    setIsCounting(60)
   };
 
   useEffect(() => {
@@ -52,26 +63,33 @@ const Verification = () => {
   }, [countdown, isCounting]);
 
   const handleVerification = async () => {
-    const payload = {
-      email: email,
-      otp: stringOtp,
-    };
-    setIsLoading(true);
-    const response = await confirmOtp(payload).unwrap();
-
     try {
+      setIsLoading(true);
+  
+      const payload = {
+        email: email,
+        otp: stringOtp,
+      };
+  
+      const response = await confirmOtp(payload).unwrap();
+  
       if (response.status === 200) {
         setIsLoading(false);
-        setVisble(true);
+        setVisible(true);
         setTimeout(() => {
-          setVisble(false);
+          setVisible(false);
           navigate.navigate("Login");
         }, 1500);
       }
     } catch (error) {
-      console.error(error);
       setIsLoading(false);
+      console.error("Verification failed:", error);
     }
+  };
+  
+  const handleResendOTP = () => {
+    // Implement OTP resend functionality here
+    
   };
 
   const handleInputChange = (text, index) => {
@@ -87,33 +105,31 @@ const Verification = () => {
     Raleway_600SemiBold,
   });
 
-  if (isLoading) {
+  if(isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{flex:1}}>
         <Loader />
       </SafeAreaView>
-    );
+    )
   }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.verificationText}>Verification</Text>
-        <Text style={styles.verificationHeader}>Enter verification code</Text>
         <Text style={styles.verificationText1}>
           Enter the code we sent to{" "}
           <Text style={styles.number}>{displayText}</Text>
         </Text>
         <View style={styles.otp}>
           <SplitField otp={otp} handleInputChange={handleInputChange} />
-          <TouchableOpacity disabled={isCounting}>
+          <TouchableOpacity
+            onPress={handleResendOTP} // Call your resend OTP function
+            disabled={isCounting}
+          >
             <Text style={styles.text3}>
-              Didn't get a code{" "}
-              <Text style={styles.brand}>
-                {isCounting
-                  ? `click to resend otp in ${countdown}`
-                  : "click to resend otp"}
-              </Text>
+              {isCounting
+                ? `Resend OTP in ${countdown}s`
+                : "Resend OTP"}
             </Text>
           </TouchableOpacity>
         </View>
