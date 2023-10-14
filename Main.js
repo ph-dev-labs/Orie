@@ -10,6 +10,9 @@ import Verification from './src/screens/Verification';
 import CreatePassword from './src/screens/CreatePassword';
 import { navigationRef } from './src/Navigation/Navigation';
 import Login from './src/screens/Login';
+import Emailresp from './src/screens/Emailresp';
+import Verificationresp from './src/screens/Verificationresp';
+import ResetPasswod from './src/screens/ResetPasswod';
 
 
 
@@ -58,6 +61,18 @@ export default function Main() {
         <Stack.Screen
           name="Login"
           component={Login}
+        />
+        <Stack.Screen
+          name="Email-for-reset-password"
+          component={Emailresp}
+        />
+        <Stack.Screen
+          name="Verification-for-reset-password"
+          component={Verificationresp}
+        />
+        <Stack.Screen
+          name="create-new-password"
+          component={ResetPasswod}
         />
       </Stack.Navigator>
     </NavigationContainer>

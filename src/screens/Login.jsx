@@ -5,7 +5,7 @@ import {
   View,
   TouchableOpacity,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Eye from "../../assets/eye.svg";
 import { useFonts } from "expo-font";
 import {
@@ -20,18 +20,30 @@ import { CheckBox } from "@rneui/themed";
 import { useUserLoginMutation } from "../Redux/Services/AuthAPi";
 import { loginFailure, loginSuccess, selectUser } from "../Redux/Auth/Login";
 import { useSelector, dispatch } from "react-redux";
+import Finger from "../../assets/fingerprint.svg";
 
 
 const Login = () => {
   const navigate = useNavigation();
   const [showPassword, setShowPassword] = useState(true);
-  const [checked, setChecked] = React.useState(true);
+  const [checked, setChecked] = React.useState(false);
   const toggleCheckbox = () => setChecked(!checked);
+  const [emailField, setEmailField] = useState("")
+  const [passwordField, setPasswordFIeld] = useState("")
   const [loginApi] = useUserLoginMutation();
-  const user = useSelector(selectUser)
+  
+  
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
+
+  const handleEmailField = (text) => {
+    setEmailField(text)
+  }
+
+  const handlePasswordField = (text) => {
+    setPasswordFIeld(text)
+  }
 
   const moveToShopPage = async () => {
     try {
@@ -52,15 +64,33 @@ const Login = () => {
       AsyncStorage.setItem(ASYNC_STORAGE_KEY, data.data.token).catch(
         (error) => {
           console.error("Error storing token in AsyncStorage:", error);
+        
         }
       );
       dispatch(loginSuccess(data.data));
+     
 
       navigate("/dashboard");
     } catch (error) {
       dispatch(loginFailure(error.message));
     }
   };
+
+  let greetText;
+  const handleGreetText = () => {
+    const now = new Date();
+    const currentHour = now.getHours();
+
+    if (currentHour >= 5 && currentHour < 12) {
+      return (greetText = "Good morning");
+    } else if (currentHour >= 12 && currentHour < 18) {
+      return (greetText = "Good afternoon");
+    } else {
+      return (greetText = "Good evening");
+    }
+  };
+
+  handleGreetText();
 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
@@ -71,9 +101,9 @@ const Login = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <View>
+        <View style={{}}>
           <View style={styles.hold}>
-            <Text style={styles.text}>Create Password</Text>
+            <Text style={styles.text}>{`${greetText} \u{1F44B}`}</Text>
           </View>
           <Text style={styles.Header}>Securely Login to your account</Text>
           <Text style={styles.text2}>
@@ -84,6 +114,8 @@ const Login = () => {
               <CustomInputField
                 placeholder="Enter email or phone number"
                 style={{ width: 320 }}
+                onChangeText={handleEmailField}
+                value={emailField}
               />
             </View>
             <View style={styles.input}>
@@ -91,6 +123,8 @@ const Login = () => {
                 placeholder="Enter Password"
                 style={{ width: 320 }}
                 secureTextEntry={showPassword}
+                onChangeText={handlePasswordField}
+                value={passwordField}
               />
               <TouchableOpacity
                 onPress={handleShowPassword}
@@ -117,7 +151,7 @@ const Login = () => {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "space-evenly",
-                  transform: [{ translateX: -20 }],
+                  transform: [{ translateX: -15 }],
                 }}
               >
                 <CheckBox
@@ -131,20 +165,24 @@ const Login = () => {
                 />
                 <Text style={styles.text3i}>Remember me</Text>
               </View>
-              <Text style={styles.text3i}>Forgot Password</Text>
+             <TouchableOpacity onPress={() => {navigate.navigate("Email-for-reset-password")}}><Text style={styles.text3i}>Forgot Password</Text></TouchableOpacity>
             </View>
           </View>
         </View>
-        <View style={styles.btnView}>
+
+        <View style={{alignSelf: "center", alignItems:"center", height: 140, transform: [{ translateY: -15 }],}}>
+          <Finger />
+          <Text style={{fontFamily: "Raleway_500Medium", margin:10}}>Login with biometrics</Text>
+        </View>
+        <View style={{ height: 100, justifyContent: "space-evenly"}}>
           <CustomButton
-            text="Finish Registration"
-            type="email"
+            text="Login"
             onPress={moveToShopPage}
           />
           <Text style={styles.text3}>
-            By clicking ‘finish registeration’, you’re agreeing to Orie’s{" "}
-            <Text style={styles.brand}> Terms and Condition</Text> and their{" "}
-            <Text style={styles.brand}>Privacy Policy </Text>
+            Don't have an account ?
+            <Text style={styles.brand}> sign up</Text> 
+        
           </Text>
         </View>
       </View>
@@ -184,7 +222,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontFamily: "Raleway_600SemiBold",
-    color: "#B4B4B4",
+    color: "black",
     fontSize: 16,
     lineHeight: 23,
     letterSpacing: 0.5,
@@ -203,7 +241,7 @@ const styles = StyleSheet.create({
   text3: {
     fontFamily: "Raleway_600SemiBold",
     color: "black",
-    fontSize: 12,
+    fontSize: 14,
     lineHeight: 20,
     margin: 10,
     textAlign: "center",
@@ -231,10 +269,10 @@ const styles = StyleSheet.create({
 
   Header: {
     fontFamily: "Raleway_800ExtraBold",
-    fontSize: 32,
-    lineHeight: 46,
+    fontSize: 28,
+    lineHeight: 38,
     letterSpacing: 0.5,
-    marginTop: 65,
+    marginTop: 19,
     textTransform: "capitalize",
   },
 });

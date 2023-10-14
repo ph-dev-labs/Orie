@@ -10,73 +10,31 @@ import {
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
-import { setEmail, setLoading } from "../Redux/Auth/registerSlice";
-import { useDispatch } from "react-redux";
-import { useCheckEmailMutation } from "../Redux/Services/AuthAPi";
 import Loader from "./Loader";
-
-const EmailReg = () => {
+const Emailresp = () => {
   const navigate = useNavigation();
-  const dispatch = useDispatch();
-
-  const [emailAd, setEmailAd] = useState("");
+  const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
-  const [isEmailAvailable, setIsEmailAvailable] = useState(false);
-  const [checkEmail] = useCheckEmailMutation();
+   // Regular expression for email validation
+   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-  // Regular expression for email validation
-  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+   const validateEmail = (text) => {
+     return emailRegex.test(text);
+   };
 
-  const validateEmail = (text) => {
-    return emailRegex.test(text);
-  };
-
-  const handleChange = (text) => {
+   const handleChange = (text) => {
     const isValidEmail = validateEmail(text);
     setEmailError(isValidEmail ? "" : "Invalid email address");
-    setEmailAd(text);
-  };
-
-  const navigateToLogin = () => {
-    navigate.navigate("Login");
-  };
-
-  useEffect(() => {
-    const handleEmailCheck = async (email) => {
-      try {
-        setEmailError(""); // Reset email error message
-
-        if (validateEmail(email)) {
-          const payload = { email };
-
-          const response = await checkEmail(payload).unwrap();
-
-          if (response.status === 200) {
-            setIsEmailAvailable(true);
-          }
-        } else {
-          setEmailError("Enter a valid email");
-        }
-      } catch (error) {
-        setIsEmailAvailable(false);
-        setEmailError("Email already exists");
-      }
-    };
-
-    handleEmailCheck(emailAd);
-  }, [emailAd]);
-
-  const handlePress = () => {
-    navigate.navigate("Register-mobile");
+    setEmail(text);
   };
 
   const dispatchEmail = () => {
-    if (emailError === "") {
-      dispatch(setEmail(emailAd));
-      navigate.navigate("Create-Password");
+    if(validateEmail(email)) {
+        navigate.navigate("Verification-for-reset-password")
     }
-  };
-
+  }
+ 
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -87,45 +45,31 @@ const EmailReg = () => {
                 <Back style={styles.icon} />
               </TouchableOpacity>
             </View>
-            <Text style={styles.text}>Add your information</Text>
+            <Text style={styles.text}>Forgot password</Text>
           </View>
           <Text style={styles.Header}>What's your Email Address?</Text>
           <Text style={styles.text2}>
-            We'll send a verification to your email address
+            We'll send a reset code to your email address
           </Text>
           <View style={styles.input}>
             <CustomInputField
               placeholder="Enter email address"
               keyboardType={"default"}
               onChangeText={handleChange}
-              value={emailAd}
+              value={email}
               error={emailError}
             />
           </View>
-          <View>
-            <Text style={styles.text3i}>
-              Don't want to use email?{" "}
-              <Text style={styles.brand} onPress={handlePress}>
-                Use mobile number instead
-              </Text>
-            </Text>
-          </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton text="Continue"  onPress={dispatchEmail} />
-          <Text style={styles.text3}>
-            Already have an account?{" "}
-            <TouchableOpacity onPress={navigateToLogin} style={styles.brand}>
-              <Text style={styles.brand}>Login</Text>
-            </TouchableOpacity>
-          </Text>
+          <CustomButton text="send verification code"  onPress={dispatchEmail} />     
         </View>
       </View>
     </SafeAreaView>
   );
 };
 
-export default EmailReg;
+export default Emailresp;
 
 const styles = StyleSheet.create({
   container: {
@@ -196,7 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: 280,
+    width: 250,
   },
 
   Header: {

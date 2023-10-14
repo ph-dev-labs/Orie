@@ -17,7 +17,6 @@ const CreatePassword = () => {
   const [passwordField, setPasswordField] = useState("");
   const [confirmPasswordField, setConfirmPasswordField] = useState("");
   const [error, setError] = useState("");
-  const [authError, setAuthError] = useState("");
   const [isLoading, setIsLoading] = useState(false)
   const [visible, setVisible] = useState(false);
   const navigate = useNavigation();
@@ -121,6 +120,7 @@ const CreatePassword = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
+        <View style={{flexDirection: "column" , justifyContent: "space-between", height: 425}}>
         <View style={styles.msgHolder}><AsyncHolder visible={visible} text="Otp successful sent" /></View>
         
         <View>
@@ -184,6 +184,7 @@ const CreatePassword = () => {
               symbol (e.g., @, #)
             </Text>
           </View>
+        </View>
         </View>
         <View style={styles.btnView}>
           <CustomButton text="Continue" onPress={handleRegistration} />
@@ -278,8 +279,8 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 12,
     lineHeight: 20,
-    marginBottom: 10,
-    position: "relative"
+    position: "relative",
+    transform: [{ translateY: -20 }]
   },
 
   brand: {
@@ -291,13 +292,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     width: 250,
+    position: "relative",
   },
 
   Header: {
     fontFamily: "Raleway_800ExtraBold",
-    fontSize: 32,
+    fontSize: 28,
     lineHeight: 46,
     letterSpacing: 0.5,
-    marginTop: 65,
+    marginTop: 25,
   },
 });

@@ -47,7 +47,7 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
 
   const styles = StyleSheet.create({
     inputContainer: {
-      marginBottom: 16,
+      marginBottom: 20,
     },
     input: {
       borderWidth: 1,
@@ -67,8 +67,10 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
     errorText: {
       color: 'red', // Error text color
       fontSize: 12,
-      marginTop: 4,
-      fontFamily: "Raleway_600SemiBold"
+      fontFamily: "Raleway_600SemiBold",
+      position: "absolute",
+      transform: [{ translateY: 40 }],
+      margin: 5
     },
   });
   

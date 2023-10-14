@@ -17,6 +17,7 @@ const AsyncHolder = ({text, visible}) => {
       borderRadius: 8,
       height: 43,
       width: 335,
+      zIndex: 1111,
       opacity: visible ? 1 : 0,
     }}
   >

@@ -11,18 +11,13 @@ import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import { useNavigation } from "@react-navigation/native";
 import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
-import { setOtp } from "../Redux/Auth/registerSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
-import Loader from "./Loader"; // Import your Loader component
+import Loader from "./Loader"; 
 
-const Verification = () => {
+const Verificationresp = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
   const [visible, setVisible] = useState(false); // Correct the typo in variable name
-  const dispatch = useDispatch();
   const navigate = useNavigation();
-  const [confirmOtp] = useConfirmOtpMutation();
   const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
   const [isCounting, setIsCounting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,33 +56,7 @@ const Verification = () => {
     return () => clearInterval(timer);
   }, [countdown, isCounting]);
 
-  const handleVerification = async () => {
-    if(stringOtp) {
-      try {
-      setIsLoading(true);
-
-      const payload = {
-        email: email,
-        otp: stringOtp,
-      };
-
-      const response = await confirmOtp(payload).unwrap();
-      setIsLoading(false);
-      if (response.message) {
-        setVisible(true);
-        setTimeout(() => {
-          setVisible(false);
-          navigate.navigate("Login");
-        }, 1500);
-      }
-    } catch (error) {
-      setIsLoading(false);
-      console.error("Verification failed:", error);
-    }
-    }
-    
-  };
-
+  
   const handleResendOTP = () => {
     // Implement OTP resend functionality here
   };
@@ -98,9 +67,11 @@ const Verification = () => {
     setOTP(updatedOTP);
   };
 
-  const email = useSelector((state) => state.registration.email);
-  const number = useSelector((state) => state.registration.number);
-  const displayText = email !== "" ? email : number;
+  const handleVerification = () => {
+    navigate.navigate("create-new-password")
+  }
+
+ 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
@@ -116,10 +87,10 @@ const Verification = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.verificationText}>Verification</Text>
-        <Text style={styles.Header}>Enter otp Code</Text>
+        <Text style={styles.Header}>Enter reset code</Text>
         <Text style={styles.verificationText1}>
           Enter the code we sent to{" "}
-          <Text style={styles.number}>{displayText}</Text>
+          <Text style={styles.number}>example@gmail.com</Text>
         </Text>
         <View style={styles.otp}>
           <SplitField otp={otp} handleInputChange={handleInputChange} />
@@ -134,12 +105,12 @@ const Verification = () => {
         </View>
       </View>
 
-      <CustomButton text="Finish registration" onPress={handleVerification} />
+      <CustomButton text="continue" onPress={handleVerification} />
     </SafeAreaView>
   );
 };
 
-export default Verification;
+export default Verificationresp;
 
 const styles = StyleSheet.create({
   container: {
@@ -147,11 +118,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     flexDirection: "column",
     justifyContent: "space-between",
-  },
-  otp: {
-    marginTop: 30,
-    flexDirection: "column",
-    alignItems: "center",
   },
   Header: {
     fontFamily: "Raleway_800ExtraBold",
@@ -161,6 +127,11 @@ const styles = StyleSheet.create({
     marginTop: 25,
   },
 
+  otp: {
+    marginTop: 30,
+    flexDirection: "column",
+    alignItems: "center",
+  },
   content: {
     flex: 1,
     paddingHorizontal: 16,
@@ -168,10 +139,10 @@ const styles = StyleSheet.create({
   },
   verificationText: {
     fontFamily: "Raleway_600SemiBold",
+    margin: 20,
     fontSize: 16,
     lineHeight: 23,
     color: "#B4B4B4",
-    margin: 20,
     textAlign: "center",
   },
   verificationText1: {
