@@ -18,64 +18,69 @@ import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { CheckBox } from "@rneui/themed";
 import { useUserLoginMutation } from "../Redux/Services/AuthAPi";
-import { loginFailure, loginSuccess, selectUser } from "../Redux/Auth/Login";
-import { useSelector, dispatch } from "react-redux";
+import { loginFailure, loginSuccess } from "../Redux/Auth/Login";
+import { useSelector, useDispatch } from "react-redux";
 import Finger from "../../assets/fingerprint.svg";
-
+import Loader from "./Loader";
 
 const Login = () => {
   const navigate = useNavigation();
   const [showPassword, setShowPassword] = useState(true);
   const [checked, setChecked] = React.useState(false);
   const toggleCheckbox = () => setChecked(!checked);
-  const [emailField, setEmailField] = useState("")
-  const [passwordField, setPasswordFIeld] = useState("")
+  const [emailField, setEmailField] = useState("");
+  const [passwordField, setPasswordFIeld] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [loginApi] = useUserLoginMutation();
-  
-  
+
+  const dispatch = useDispatch();
+
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
   const handleEmailField = (text) => {
-    setEmailField(text)
-  }
+    setEmailField(text);
+  };
 
   const handlePasswordField = (text) => {
-    setPasswordFIeld(text)
-  }
+    setPasswordFIeld(text);
+  };
 
   const moveToShopPage = async () => {
     try {
-      const response = await loginApi({ email, password }).unwrap();
-
+      setIsLoading(true);
+      const response = await loginApi({ emailField, passwordField }).unwrap();
       const data = response.data;
-
-      if (data.status === "error") {
-        console.log(
-          "There is an error, here is the message:",
-          data.msg ? data.msg : "Something went wrong"
-        );
-        dispatch(loginFailure(data.msg ? data.msg : "Something went wrong")); // Dispatch error message
-        return;
+      console.log(data);
+      setIsLoading(false);
+  
+      // Save the token in AsyncStorage
+      try {
+        await AsyncStorage.setItem(ASYNC_STORAGE_KEY, data.data.token);
+      } catch (error) {
+        console.error("Error storing token in AsyncStorage:", error);
       }
-
-      // Save token in AsyncStorage
-      AsyncStorage.setItem(ASYNC_STORAGE_KEY, data.data.token).catch(
-        (error) => {
-          console.error("Error storing token in AsyncStorage:", error);
-        
-        }
-      );
+  
       dispatch(loginSuccess(data.data));
-     
-
-      navigate("/dashboard");
+      navigate.navigate("/dashboard");
     } catch (error) {
-      dispatch(loginFailure(error.message));
+      setIsLoading(false);
+  
+      if (error.response) {
+        // If there's a response object, it means it's an HTTP error
+        const status = error.response.status;
+        const errorMessage = error.response.data.msg || "Something went wrong";
+        console.log(`HTTP Error [Status ${status}]: ${errorMessage}`);
+        dispatch(loginFailure(errorMessage));
+      } else {
+        // Handle non-HTTP errors
+        console.error("Non-HTTP Login error:", error);
+        dispatch(loginFailure(error.message));
+      }
     }
   };
-
+  
   let greetText;
   const handleGreetText = () => {
     const now = new Date();
@@ -97,6 +102,14 @@ const Login = () => {
     Raleway_800ExtraBold,
     Raleway_500Medium,
   });
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }}>
+        <Loader />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -165,24 +178,34 @@ const Login = () => {
                 />
                 <Text style={styles.text3i}>Remember me</Text>
               </View>
-             <TouchableOpacity onPress={() => {navigate.navigate("Email-for-reset-password")}}><Text style={styles.text3i}>Forgot Password</Text></TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigate.navigate("Email-for-reset-password");
+                }}
+              >
+                <Text style={styles.text3i}>Forgot Password</Text>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
-        <View style={{alignSelf: "center", alignItems:"center", height: 140, transform: [{ translateY: -15 }],}}>
+        <View
+          style={{
+            alignSelf: "center",
+            alignItems: "center",
+            height: 140,
+            transform: [{ translateY: -15 }],
+          }}
+        >
           <Finger />
-          <Text style={{fontFamily: "Raleway_500Medium", margin:10}}>Login with biometrics</Text>
+          <Text style={{ fontFamily: "Raleway_500Medium", margin: 10 }}>
+            Login with biometrics
+          </Text>
         </View>
-        <View style={{ height: 100, justifyContent: "space-evenly"}}>
-          <CustomButton
-            text="Login"
-            onPress={moveToShopPage}
-          />
+        <View style={{ height: 100, justifyContent: "space-evenly" }}>
+          <CustomButton text="Login" onPress={() => {navigate.navigate("buyer-interface")}} />
           <Text style={styles.text3}>
-            Don't have an account ?
-            <Text style={styles.brand}> sign up</Text> 
-        
+            Don't have an account ?<Text style={styles.brand}> sign up</Text>
           </Text>
         </View>
       </View>

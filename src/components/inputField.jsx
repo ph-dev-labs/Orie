@@ -58,8 +58,8 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
       fontFamily: "Raleway_600SemiBold",
       fontSize: 16,
       lineHeight: 23, 
-      height: "35",
-      width: "100"
+      height: 40,
+      width: "100%"
     },
     errorInput: {
       borderColor: 'red', // Border color when there's an error

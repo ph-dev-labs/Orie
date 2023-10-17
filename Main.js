@@ -13,6 +13,7 @@ import Login from './src/screens/Login';
 import Emailresp from './src/screens/Emailresp';
 import Verificationresp from './src/screens/Verificationresp';
 import ResetPasswod from './src/screens/ResetPasswod';
+import BuyerHome from './src/screens/Buyers-interface/BuyerHome';
 
 
 
@@ -73,6 +74,10 @@ export default function Main() {
         <Stack.Screen
           name="create-new-password"
           component={ResetPasswod}
+        />
+        <Stack.Screen
+          name="buyer-interface"
+          component={BuyerHome}
         />
       </Stack.Navigator>
     </NavigationContainer>
