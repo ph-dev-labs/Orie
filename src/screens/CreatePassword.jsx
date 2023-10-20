@@ -94,7 +94,7 @@ const CreatePassword = () => {
       // If there is a response from the server
       const responseData = error.data;
       if (responseData && responseData.data && responseData.data.errorMsg) {
-        setError(responseData.data.errorMsg);
+        setError(responseData.data.msg);
       } 
     } else {
       setError("An unexpected error occurred");
