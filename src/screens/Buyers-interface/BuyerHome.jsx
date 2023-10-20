@@ -7,6 +7,8 @@ import Category from "../../../assets/darhboard.svg";
 import CategoryHolder from "../../components/CategoryHolder";
 import ImageSvg from "../../../assets/image.svg";
 import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
+import CheckoutItem from "../../components/CheckoutItem";
+import Swiper from "react-native-swiper";
 
 const BuyerHome = () => {
   const [searchField, setSearchField] = useState("");
@@ -87,7 +89,45 @@ const BuyerHome = () => {
                   <ImageSvg />
                 </View>
               </View>
-              <Text style={styles.text}>Recommended for you at discounted prices</Text>
+              <Text style={styles.text}>
+                Recommended for you at discounted prices
+              </Text>
+              <View>
+                <Swiper
+                  style={styles.wrapper}
+                  showsPagination={false}
+                  horizontal={true}
+                  width={"100%"} // Set your desired width here
+                >
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                </Swiper>
+              </View>
             </View>
           </View>
         )}
@@ -101,6 +141,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  contSlider: {
+    height: 400,
+  },
+
+  slide: {
+    flex: 1,
+    
+  },
+  wrapper: {
+    // Reduce the gap between slides
+    marginTop: 20, // You can adjust this value as needed
+
+  },
+  dot: {
+    // Style for pagination dots
+    backgroundColor: "#D3D3D3", // Color of inactive dots
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    margin: 3, // Adjust the margin between dots
+  },
+
   contentContainer: {
     paddingHorizontal: 16,
     paddingVertical: 20,
@@ -111,7 +173,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
 
-   text: {
+  text: {
     fontFamily: "Raleway_600SemiBold",
     color: "#B4B4B4",
     fontSize: 14,
@@ -119,9 +181,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
 
-
   featureProductSections: {
-    marginTop: 35
+    marginTop: 35,
   },
 
   featureProduct: {

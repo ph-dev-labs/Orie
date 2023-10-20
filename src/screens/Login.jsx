@@ -67,18 +67,16 @@ const Login = () => {
     } catch (error) {
       setIsLoading(false);
   
-      if (error.data) {
+      if (error.response) {
         // If there's a response object, it means it's an HTTP error
-        console.log(error.res.msg)
-        setIsLoading(false)
-        const status = error.status;
-        const errorMessage = error.res.msg || "Something went wrong";
+        const status = error.response.status;
+        const errorMessage = error.response.data.msg || "Something went wrong";
         console.log(`HTTP Error [Status ${status}]: ${errorMessage}`);
         dispatch(loginFailure(errorMessage));
       } else {
         // Handle non-HTTP errors
         console.error("Non-HTTP Login error:", error);
-        dispatch(loginFailure(errorMessage));
+        dispatch(loginFailure(error.message));
       }
     }
   };
@@ -205,7 +203,7 @@ const Login = () => {
           </Text>
         </View>
         <View style={{ height: 100, justifyContent: "space-evenly" }}>
-          <CustomButton text="Login" onPress={moveToShopPage} />
+          <CustomButton text="Login" onPress={() => {navigate.navigate("buyer-interface")}} />
           <Text style={styles.text3}>
             Don't have an account ?<Text style={styles.brand}> sign up</Text>
           </Text>
