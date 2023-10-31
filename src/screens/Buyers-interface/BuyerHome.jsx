@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, SafeAreaView, FlatList, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  SafeAreaView,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  Dimensions,
+} from "react-native";
 import Notification from "../../../assets/Notificationbell.svg";
 import CustomInputField from "../../components/inputField";
 import Character from "../../../assets/Character.svg";
@@ -8,7 +16,7 @@ import CategoryHolder from "../../components/CategoryHolder";
 import ImageSvg from "../../../assets/image.svg";
 import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import CheckoutItem from "../../components/CheckoutItem";
-import Swiper from "react-native-swiper";
+import FarmerCheckout from "../../components/FarmerCheckout";
 
 const BuyerHome = () => {
   const [searchField, setSearchField] = useState("");
@@ -24,6 +32,15 @@ const BuyerHome = () => {
     setSearchField(text);
   };
 
+  const data = [1, 2, 3, 4];
+  const numColumns = 2;
+  const windowWidth = Dimensions.get("window").width;
+
+  const renderGridItem = () => {
+    return (
+      <FarmerCheckout /> // Assuming FarmerCheckout is your custom component
+    );
+  };
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -92,12 +109,12 @@ const BuyerHome = () => {
               <Text style={styles.text}>
                 Recommended for you at discounted prices
               </Text>
-              <View>
-                <Swiper
-                  style={styles.wrapper}
-                  showsPagination={false}
+              <View style={{ margin: 5 }}>
+                <ScrollView
+                  style={{ flex: 1 }}
                   horizontal={true}
-                  width={"100%"} // Set your desired width here
+                  scrollEventThrottle={16}
+                  pagingEnabled={true}
                 >
                   <View style={styles.slide}>
                     <CheckoutItem />
@@ -126,7 +143,71 @@ const BuyerHome = () => {
                   <View style={styles.slide}>
                     <CheckoutItem />
                   </View>
-                </Swiper>
+                </ScrollView>
+
+                <ScrollView
+                  style={{ flex: 1 }}
+                  horizontal={true}
+                  scrollEventThrottle={16}
+                  pagingEnabled={true}
+                >
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                  <View style={styles.slide}>
+                    <CheckoutItem />
+                  </View>
+                </ScrollView>
+                <View style={{padding: 0}}>
+                  <View style={styles.featureProduct}>
+                    <Text style={styles.categoryText}>Top rated farmers</Text>
+                    <View style={styles.Imageicon}>
+                      <ImageSvg />
+                    </View>
+                  </View>
+                  <Text style={styles.text}>
+                    Based on reviews from other customers and quality of
+                    products
+                  </Text>
+                  <View style={styles.grid}>
+                    <FlatList
+                      data={data}
+                      renderItem={renderGridItem}
+                      keyExtractor={(item) => item.toString()}
+                      numColumns={numColumns} // Set the number of columns in your grid
+                      contentContainerStyle={styles.gridContainer}
+                      columnWrapperStyle={{
+                        // Calculate the width of each grid item dynamically based on screen width
+                        marginHorizontal: windowWidth * 0.02, // Adjust as needed
+                        width:
+                          (windowWidth -
+                            (numColumns + 1) * (windowWidth * 0.02)) /
+                          numColumns,
+                      }}
+                    />
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -140,32 +221,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    paddingVertical: 20,
   },
+
+  gridContainer: {
+    paddingHorizontal: 5, // Adjust as needed
+  },
+
   contSlider: {
     height: 400,
   },
 
   slide: {
     flex: 1,
-    
   },
-  wrapper: {
-    // Reduce the gap between slides
-    marginTop: 20, // You can adjust this value as needed
 
-  },
-  dot: {
-    // Style for pagination dots
-    backgroundColor: "#D3D3D3", // Color of inactive dots
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    margin: 3, // Adjust the margin between dots
+  grid: {
+    display: "flex",
+    flexWrap: "wrap",
   },
 
   contentContainer: {
     paddingHorizontal: 16,
     paddingVertical: 20,
+    paddingBottom: 20,
   },
   category: {
     flexDirection: "row",
@@ -186,7 +265,7 @@ const styles = StyleSheet.create({
   },
 
   featureProduct: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignSelf: "flex-start",
     gap: 5,
   },

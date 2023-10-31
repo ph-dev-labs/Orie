@@ -6,11 +6,11 @@ import {
 } from "@expo-google-fonts/raleway";
 import AddBtn from "../../assets/Rectangle.svg"
 
-const CheckoutItem = ({ imageURL }) => {
+const FarmerCheckout = ({ imageURL }) => {
   return (
     <View style={styles.checkoutContainer}>
-     <Image
-        source={require('../../assets/thomas-gamstaetter-IFGVE61AAno-unsplash.jpg')}
+       <Image
+        source={require('../../assets/annie-spratt-QYcSeY7vuZM-unsplash.jpg')}
         style={styles.image}
         resizeMode="cover"
       />
@@ -28,8 +28,8 @@ const CheckoutItem = ({ imageURL }) => {
 
 const styles = StyleSheet.create({
   checkoutContainer: {
-    height: 228,
-    width: 186,
+    height: 278,
+    width: 166,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#fff",
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CheckoutItem;
+export default FarmerCheckout;
