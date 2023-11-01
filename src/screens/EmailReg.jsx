@@ -43,6 +43,7 @@ const EmailReg = () => {
 
   useEffect(() => {
     const handleEmailCheck = async (email) => {
+      setEmailError("");
       try {
         setEmailError(""); // Reset email error message
 
@@ -112,7 +113,7 @@ const EmailReg = () => {
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton text="Continue"  onPress={dispatchEmail} />
+          <CustomButton text="Continue" onPress={dispatchEmail} />
           <Text style={styles.text3}>
             Already have an account?{" "}
             <TouchableOpacity onPress={navigateToLogin} style={styles.brand}>

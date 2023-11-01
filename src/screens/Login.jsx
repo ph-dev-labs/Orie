@@ -18,10 +18,10 @@ import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
 import { CheckBox } from "@rneui/themed";
 import { useUserLoginMutation } from "../Redux/Services/AuthAPi";
-import { loginFailure, loginSuccess } from "../Redux/Auth/Login";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import Finger from "../../assets/fingerprint.svg";
 import Loader from "./Loader";
+import { moveToShopPage } from "../Redux/Auth/Login";
 
 const Login = () => {
   const navigate = useNavigation();
@@ -29,78 +29,29 @@ const Login = () => {
   const [checked, setChecked] = React.useState(false);
   const toggleCheckbox = () => setChecked(!checked);
   const [emailField, setEmailField] = useState("");
-  const [passwordField, setPasswordFIeld] = useState("");
+  const [passwordField, setPasswordField] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginApi] = useUserLoginMutation();
   
-
   const dispatch = useDispatch();
-
+  
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
-
+  
   const handleEmailField = (text) => {
     setEmailField(text);
   };
-
+  
   const handlePasswordField = (text) => {
-    setPasswordFIeld(text);
+    setPasswordField(text);
   };
+  
+  const handleLogin = () => {
+    dispatch(moveToShopPage(emailField, passwordField, setIsLoading, loginApi, dispatch, navigate));
+  };
+  
 
-  const handleTokenStorage = async (token) => {
-    try {
-      await AsyncStorage.setItem(ASYNC_STORAGE_KEY, token);
-    } catch (error) {
-      console.error("Error storing token in AsyncStorage:", error);
-      throw new Error("Token storage failed");
-    }
-  };
-  
-  const handleHttpError = (error, dispatch) => {
-    let errorMessage = "Something went wrong";
-  
-    if (error.data && error.data.status) {
-      const { status, data } = error.data;
-      errorMessage = data.msg || errorMessage;
-      console.log(`HTTP Error [Status ${status}]: ${errorMessage}`);
-    } else {
-      console.error("Non-HTTP Login error:", error);
-    }
-  
-    dispatch(loginFailure(errorMessage));
-  };
-  
-  const moveToShopPage = async () => {
-    setIsLoading(true);
-  
-    try {
-      const loginResponse = await loginApi({ email: emailField, password: passwordField }).unwrap();
-      const { data: responseData } = loginResponse;
-  
-      setIsLoading(false);
-  
-      // Save the token in AsyncStorage
-      await handleTokenStorage(responseData.data.token);
-  
-      dispatch(loginSuccess(responseData.data));
-      navigate.navigate("/dashboard");
-      console.log(responseData);
-    } catch (error) {
-      setIsLoading(false);
-      navigate.navigate("buyer-interface");
-      console.log(error)
-      if (error.data.msg || (error.response && error.response.status)) {
-        handleHttpError(error, dispatch);
-        navigate.navigate("buyer-interface");
-      } else {
-        dispatch(loginFailure(error.message));
-        navigate.navigate("buyer-interface");
-      }
-    }
-  };
-  
-  
   let greetText;
   const handleGreetText = () => {
     const now = new Date();
@@ -198,9 +149,7 @@ const Login = () => {
                 />
                 <Text style={styles.text3i}>Remember me</Text>
               </View>
-              <TouchableOpacity
-                onPress={moveToShopPage}
-              >
+              <TouchableOpacity onPress={moveToShopPage}>
                 <Text style={styles.text3i}>Forgot Password</Text>
               </TouchableOpacity>
             </View>
@@ -221,7 +170,7 @@ const Login = () => {
           </Text>
         </View>
         <View style={{ height: 100, justifyContent: "space-evenly" }}>
-          <CustomButton text="Login" onPress={moveToShopPage} />
+          <CustomButton text="Login" onPress={handleLogin} />
           <Text style={styles.text3}>
             Don't have an account ?<Text style={styles.brand}> sign up</Text>
           </Text>
