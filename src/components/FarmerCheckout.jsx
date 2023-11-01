@@ -15,12 +15,11 @@ const FarmerCheckout = ({ imageURL }) => {
         resizeMode="cover"
       />
       <View style={{ margin: 5 }}>
-        <Text style={styles.productDesc}>foreign rice</Text>
-        <Text style={styles.farmName}>obapluto farm</Text>
+        <Text style={styles.productDesc}>Obapluto farms</Text>
+        <Text style={styles.farmName}>Rumuola, Port-Harcourt</Text>
       </View>
       <View style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: 'space-between', margin: 5}}>
-        <Text style={styles.productDesc2}>25000</Text>
-       <View style={styles.add}><Text style={styles.addtext}>+</Text></View>
+        <Text style={styles.productDesc2}>4.0 rating based on 189 buyers</Text>
       </View>
     </View>
   );
@@ -29,11 +28,12 @@ const FarmerCheckout = ({ imageURL }) => {
 const styles = StyleSheet.create({
   checkoutContainer: {
     height: 278,
-    width: 166,
+    width: 175,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#fff",
-    margin: 10,
+    marginTop: 10,
+    padding: 4
   },
 
   add: {
@@ -66,8 +66,8 @@ const styles = StyleSheet.create({
   },
 
   productDesc2: {
-    fontFamily: "Raleway_700Bold",
-    fontSize: 18,
+    fontFamily: "Raleway_400Regular",
+    fontSize: 12,
     paddingHorizontal: 5,
     textTransform: "capitalize",
   },
@@ -77,11 +77,14 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textTransform: "capitalize",
     paddingHorizontal: 5,
+    color: "grey"
   },
   image: {
     flex: 1,
     maxWidth: "100%",
     height: "auto",
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10
   },
 });
 

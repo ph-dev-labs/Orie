@@ -5,7 +5,7 @@ import { useFonts } from 'expo-font';
 import { Raleway_600SemiBold,  } from '@expo-google-fonts/raleway';
 
 
-const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyboardType, secureTextEntry }) => {
+const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyboardType, secureTextEntry, onFocus }) => {
 
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold
@@ -30,6 +30,7 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
           placeholder={placeholder}
           secureTextEntry={secureTextEntry}
           keyboardType={keyboardType}
+          onFocus={onFocus}
         />
         {isError && <Text style={styles.errorText}>{error}</Text>}
       </View>
@@ -42,6 +43,8 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
     error: PropTypes.string,
     placeholder: PropTypes.string,
     style: PropTypes.object,
+    onFocus: PropTypes.func,
+    
   };
   
 

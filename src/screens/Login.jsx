@@ -32,6 +32,7 @@ const Login = () => {
   const [passwordField, setPasswordFIeld] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginApi] = useUserLoginMutation();
+  
 
   const dispatch = useDispatch();
 
@@ -47,39 +48,58 @@ const Login = () => {
     setPasswordFIeld(text);
   };
 
-  const moveToShopPage = async () => {
+  const handleTokenStorage = async (token) => {
     try {
-      setIsLoading(true);
-      const response = await loginApi({ emailField, passwordField }).unwrap();
-      const data = response.data;
-      console.log(data);
+      await AsyncStorage.setItem(ASYNC_STORAGE_KEY, token);
+    } catch (error) {
+      console.error("Error storing token in AsyncStorage:", error);
+      throw new Error("Token storage failed");
+    }
+  };
+  
+  const handleHttpError = (error, dispatch) => {
+    let errorMessage = "Something went wrong";
+  
+    if (error.data && error.data.status) {
+      const { status, data } = error.data;
+      errorMessage = data.msg || errorMessage;
+      console.log(`HTTP Error [Status ${status}]: ${errorMessage}`);
+    } else {
+      console.error("Non-HTTP Login error:", error);
+    }
+  
+    dispatch(loginFailure(errorMessage));
+  };
+  
+  const moveToShopPage = async () => {
+    setIsLoading(true);
+  
+    try {
+      const loginResponse = await loginApi({ email: emailField, password: passwordField }).unwrap();
+      const { data: responseData } = loginResponse;
+  
       setIsLoading(false);
   
       // Save the token in AsyncStorage
-      try {
-        await AsyncStorage.setItem(ASYNC_STORAGE_KEY, data.data.token);
-      } catch (error) {
-        console.error("Error storing token in AsyncStorage:", error);
-      }
+      await handleTokenStorage(responseData.data.token);
   
-      dispatch(loginSuccess(data.data));
+      dispatch(loginSuccess(responseData.data));
       navigate.navigate("/dashboard");
+      console.log(responseData);
     } catch (error) {
       setIsLoading(false);
-  
-      if (error.response) {
-        // If there's a response object, it means it's an HTTP error
-        const status = error.response.status;
-        const errorMessage = error.response.data.msg || "Something went wrong";
-        console.log(`HTTP Error [Status ${status}]: ${errorMessage}`);
-        dispatch(loginFailure(errorMessage));
+      navigate.navigate("buyer-interface");
+      console.log(error)
+      if (error.data.msg || (error.response && error.response.status)) {
+        handleHttpError(error, dispatch);
+        navigate.navigate("buyer-interface");
       } else {
-        // Handle non-HTTP errors
-        console.error("Non-HTTP Login error:", error);
         dispatch(loginFailure(error.message));
+        navigate.navigate("buyer-interface");
       }
     }
   };
+  
   
   let greetText;
   const handleGreetText = () => {
@@ -179,9 +199,7 @@ const Login = () => {
                 <Text style={styles.text3i}>Remember me</Text>
               </View>
               <TouchableOpacity
-                onPress={() => {
-                  navigate.navigate("Email-for-reset-password");
-                }}
+                onPress={moveToShopPage}
               >
                 <Text style={styles.text3i}>Forgot Password</Text>
               </TouchableOpacity>
@@ -203,7 +221,7 @@ const Login = () => {
           </Text>
         </View>
         <View style={{ height: 100, justifyContent: "space-evenly" }}>
-          <CustomButton text="Login" onPress={() => {navigate.navigate("buyer-interface")}} />
+          <CustomButton text="Login" onPress={moveToShopPage} />
           <Text style={styles.text3}>
             Don't have an account ?<Text style={styles.brand}> sign up</Text>
           </Text>

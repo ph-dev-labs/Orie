@@ -17,6 +17,8 @@ import ImageSvg from "../../../assets/image.svg";
 import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import CheckoutItem from "../../components/CheckoutItem";
 import FarmerCheckout from "../../components/FarmerCheckout";
+import Toolbar from "../../components/Toolbar";
+import { useNavigation } from "@react-navigation/native";
 
 const BuyerHome = () => {
   const [searchField, setSearchField] = useState("");
@@ -32,14 +34,20 @@ const BuyerHome = () => {
     setSearchField(text);
   };
 
+  const navigation = useNavigation()
   const data = [1, 2, 3, 4];
   const numColumns = 2;
   const windowWidth = Dimensions.get("window").width;
 
   const renderGridItem = () => {
     return (
-      <FarmerCheckout /> // Assuming FarmerCheckout is your custom component
+      <FarmerCheckout /> 
     );
+  };
+
+  const handleInputFocus = () => {
+   
+    navigation.navigate('search');
   };
   return (
     <SafeAreaView style={styles.container}>
@@ -52,11 +60,12 @@ const BuyerHome = () => {
             <View style={styles.notificationHolder}>
               <Notification />
             </View>
-            <View style={{ width: "80%" }}>
+            <View style={{ width: "85%" }}>
               <CustomInputField
                 onChangeText={handleSearch}
                 value={searchField}
                 placeholder="search for products"
+                onFocus={handleInputFocus}
               />
             </View>
           </View>
@@ -213,6 +222,9 @@ const BuyerHome = () => {
           </View>
         )}
       />
+      <View>
+        <Toolbar />
+      </View>
     </SafeAreaView>
   );
 };
@@ -239,6 +251,10 @@ const styles = StyleSheet.create({
   grid: {
     display: "flex",
     flexWrap: "wrap",
+    transform: [{translateX: -25}],
+    alignSelf: "flex-start",
+    marginBottom: 20,
+    width: "100%"
   },
 
   contentContainer: {
@@ -265,9 +281,11 @@ const styles = StyleSheet.create({
   },
 
   featureProduct: {
-    flexDirection: "column",
+    flexDirection: "row",
     alignSelf: "flex-start",
     gap: 5,
+    flexWrap: "nowrap",
+    flexGrow:1
   },
   categoryText: {
     fontFamily: "Raleway_600SemiBold",
@@ -279,14 +297,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   inputHolder: {
-    marginTop: 30,
+    marginTop: 17,
     alignSelf: "flex-start",
     flexDirection: "row",
     alignItems: "center",
     width: "100%",
     height: 100,
     justifyContent: "space-between",
-    gap: 15,
+    gap: 5,
   },
   notificationHolder: {
     height: 45,
@@ -306,10 +324,10 @@ const styles = StyleSheet.create({
   },
   Header: {
     fontFamily: "Raleway_800ExtraBold",
-    fontSize: 26,
-    lineHeight: 40,
+    fontSize: 24,
+    lineHeight: 36,
     alignSelf: "flex-start",
-    width: 385,
+    textTransform: "capitalize"
   },
   gradientBox: {
     backgroundColor: "#0AC17F",
