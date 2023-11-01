@@ -69,9 +69,10 @@ const Choice = () => {
             onPress={() => handleOptionPress("seller")}
             activeStyle={activeStyles}
           />
-        </View>
+        </View> 
+        <View style={{transform: [{translateY: 35}]}}><CustomButton text="get started" onPress={handlePress} /></View>
       </View>
-      <CustomButton text="get started" onPress={handlePress} />
+     
     </SafeAreaView>
   );
 };
@@ -82,7 +83,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     flexDirection: "column",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
   },
   content: {
     alignItems: "center",
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   svgWrapper: {
-    marginTop: 90,
+    marginTop: 50,
     width: 100,
     height: 100,
   },

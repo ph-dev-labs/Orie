@@ -43,9 +43,12 @@ const Searchscreen = () => {
         <View style={styles.inputContainer}>
           <CustomInputField onChangeText={handleSearch} value={searchField} />
           {filteredSuggestions.map((suggestion, index) => (
-            <Text key={index} style={styles.suggestion}>
-              {suggestion}
-            </Text>
+            <View style={styles.suggestionContainer} key={index}>
+              <Text key={index} style={styles.suggestion}>
+                {suggestion}
+              </Text>
+              <Vector9 />
+            </View>
           ))}
         </View>
         {/* Other components for search input, history, or results can be added here */}
@@ -67,20 +70,19 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   inputContainer: {
-    width: "90%",
+    width: "100%",
   },
   suggestionContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    borderBottomWidth: 1,
-    borderBottomColor: "#CCCCCC",
+    width: "100%",
     paddingVertical: 10,
   },
   suggestion: {
     fontFamily: "Raleway_400Regular",
     fontSize: 16,
-    padding: 6
+    padding: 6,
   },
   vectorIcon: {
     // Add styles for your vector or icon here
