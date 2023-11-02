@@ -72,8 +72,9 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
       fontSize: 12,
       fontFamily: "Raleway_600SemiBold",
       position: "absolute",
-      transform: [{ translateY: 40 }],
-      margin: 5
+      transform: [{ translateY: 30 }],
+      margin: 5,
+      padding: 4
     },
   });
   

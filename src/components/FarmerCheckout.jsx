@@ -27,7 +27,7 @@ const FarmerCheckout = ({ imageURL }) => {
 
 const styles = StyleSheet.create({
   checkoutContainer: {
-    height: 278,
+    height: 215,
     width: 175,
     borderRadius: 10,
     overflow: "hidden",

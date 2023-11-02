@@ -1,11 +1,8 @@
-import { AsyncStorage } from 'react-native';
-import { createSlice } from '@reduxjs/toolkit';
-import { useDispatch } from 'react-redux';
-import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createSlice } from "@reduxjs/toolkit";
+import { useNavigation } from "@react-navigation/native";
 
-
-const ASYNC_STORAGE_KEY = 'Auth_token'; // Consistent key for AsyncStorage
-
+const ASYNC_STORAGE_KEY = "Auth_token";
 const initialState = {
   user: null,
   token: null,
@@ -13,13 +10,14 @@ const initialState = {
 };
 
 const loginSlice = createSlice({
-  name: 'login',
+  name: "login",
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      state.user = action.payload.user;
-      state.token = action.payload.token;
-      state.error = null; // Clear any previous errors on successful login
+      const { user, token } = action.payload;
+      state.user = user;
+      state.token = token;
+      state.error = null;
     },
     loginFailure: (state, action) => {
       state.error = action.payload;
@@ -28,17 +26,16 @@ const loginSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      AsyncStorage.removeItem(ASYNC_STORAGE_KEY)
-        .catch((error) => {
-          console.error('Error clearing token from AsyncStorage:', error);
-        });
+      AsyncStorage.removeItem(ASYNC_STORAGE_KEY).catch((error) => {
+        console.error("Error clearing token from AsyncStorage:", error);
+      });
     },
   },
 });
 
 export const { loginFailure, loginSuccess, logout } = loginSlice.actions;
-
 export const selectUser = (state) => state.login.user;
+export const selectToken = (state) => state.login.token;
 
 export default loginSlice.reducer;
 
@@ -46,33 +43,42 @@ const handleTokenStorage = async (token) => {
   try {
     await AsyncStorage.setItem(ASYNC_STORAGE_KEY, token);
   } catch (error) {
-    console.error('Error storing token in AsyncStorage:', error);
-    throw new Error('Token storage failed');
+    console.error("Error storing token in AsyncStorage:", error);
+    throw new Error("Token storage failed");
   }
 };
 
-export const moveToShopPage = (emailField, passwordField, setIsLoading, loginApi) => {
+export const moveToShopPage = (
+  email,
+  password,
+  setIsLoading,
+  loginApi,
+  navigate,
+  setEmailField,
+  setPassword,
+  setVisible
+) => {
   return async (dispatch) => {
     setIsLoading(true);
 
     try {
-      const loginResponse = await loginApi( {emailField, passwordField} ).unwrap();
-      const { data } = loginResponse;
-      console.log(data)
+      const data = await loginApi({ email, password }).unwrap();
       setIsLoading(false);
-
       await handleTokenStorage(data.token);
+      dispatch(loginSuccess(data));
 
-      dispatch(loginSuccess({ user: data.user, token: data.token }));
-
-      const navigate = useNavigation();
-      navigate.navigate('buyer-interface');
-      console.log(data);
+      setEmailField("");
+      setPassword("");
+      setVisible(true);
+      setTimeout(() => {
+        setVisible(false);
+        navigate.navigate("buyer-interface");
+      }, 2000);
     } catch (error) {
       setIsLoading(false);
-      console.log(error);
-
       dispatch(loginFailure(error.message));
+      // Handle error, e.g., display error message to the user
+      console.error("Login failed:", error);
     }
   };
 };

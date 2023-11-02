@@ -19,9 +19,13 @@ import CheckoutItem from "../../components/CheckoutItem";
 import FarmerCheckout from "../../components/FarmerCheckout";
 import Toolbar from "../../components/Toolbar";
 import { useNavigation } from "@react-navigation/native";
+import { selectUser } from "../../Redux/Auth/Login";
+import { useDispatch, useSelector } from "react-redux";
+import { selectToken } from "../../Redux/Auth/Login";
 
 const BuyerHome = () => {
   const [searchField, setSearchField] = useState("");
+  const token = useSelector(selectToken)
   const categoriesArr = [
     "food items",
     "livestock & dairy produces",
@@ -29,6 +33,8 @@ const BuyerHome = () => {
     "fruits & vegetables",
     "view more",
   ];
+
+  console.log(token)
 
   const handleSearch = (text) => {
     setSearchField(text);

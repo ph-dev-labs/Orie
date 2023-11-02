@@ -22,6 +22,7 @@ import { useDispatch } from "react-redux";
 import Finger from "../../assets/fingerprint.svg";
 import Loader from "./Loader";
 import { moveToShopPage } from "../Redux/Auth/Login";
+import AsyncHolder from "../components/AsyncHolder";
 
 const Login = () => {
   const navigate = useNavigation();
@@ -29,28 +30,60 @@ const Login = () => {
   const [checked, setChecked] = React.useState(false);
   const toggleCheckbox = () => setChecked(!checked);
   const [emailField, setEmailField] = useState("");
-  const [passwordField, setPasswordField] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [loginApi] = useUserLoginMutation();
-  
+  const [error, setError] = useState("");
+  const [errorEmail, setErrorEmail] = useState("");
+  const [visible, setVisible] = useState(false);
+
   const dispatch = useDispatch();
-  
+
   const handleShowPassword = () => {
     setShowPassword(!showPassword);
   };
-  
+
   const handleEmailField = (text) => {
     setEmailField(text);
   };
-  
+
   const handlePasswordField = (text) => {
-    setPasswordField(text);
+    setPassword(text);
   };
-  
+  const email = emailField.toLowerCase();
   const handleLogin = () => {
-    dispatch(moveToShopPage(emailField, passwordField, setIsLoading, loginApi, dispatch, navigate));
+    // Regular expression to validate the email format
+    const emailFormat = /^\S+@\S+\.\S+$/;
+
+    // Check for email and password existence
+    if (!email || !password) {
+      setError("Email and password are required.");
+      setErrorEmail("Email and password are required.");
+      return;
+    }
+
+    // Check if the email matches the email format regex
+    if (!emailFormat.test(email)) {
+      setErrorEmail("Invalid email format.");
+      return;
+    }
+
+    setError("")
+    setErrorEmail("")
+
+    dispatch(
+      moveToShopPage(
+        email,
+        password,
+        setIsLoading,
+        loginApi,
+        navigate,
+        setEmailField,
+        setPassword,
+        setVisible
+      )
+    );
   };
-  
 
   let greetText;
   const handleGreetText = () => {
@@ -86,6 +119,9 @@ const Login = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View style={{}}>
+          <View style={styles.msgHolder}>
+            <AsyncHolder visible={visible} text="Login successful" />
+          </View>
           <View style={styles.hold}>
             <Text style={styles.text}>{`${greetText} \u{1F44B}`}</Text>
           </View>
@@ -100,6 +136,7 @@ const Login = () => {
                 style={{ width: 320 }}
                 onChangeText={handleEmailField}
                 value={emailField}
+                error={errorEmail}
               />
             </View>
             <View style={styles.input}>
@@ -108,7 +145,8 @@ const Login = () => {
                 style={{ width: 320 }}
                 secureTextEntry={showPassword}
                 onChangeText={handlePasswordField}
-                value={passwordField}
+                value={password}
+                error={error}
               />
               <TouchableOpacity
                 onPress={handleShowPassword}
@@ -187,6 +225,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
   },
+  msgHolder: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    padding: 7
+  },
+
   eyeIcon: {
     justifyContent: "center",
     alignItems: "center",

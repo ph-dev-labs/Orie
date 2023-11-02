@@ -11,8 +11,7 @@ import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import { useNavigation } from "@react-navigation/native";
 import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
-import { setOtp } from "../Redux/Auth/registerSlice";
-import { useDispatch, useSelector } from "react-redux";
+import {  useSelector } from "react-redux";
 import { useConfirmOtpMutation } from "../Redux/Services/AuthAPi";
 import Loader from "./Loader"; // Import your Loader component
 
@@ -20,7 +19,6 @@ const Verification = () => {
   // Initialize OTP with empty strings
   const [otp, setOTP] = useState(["", "", "", "", ""]);
   const [visible, setVisible] = useState(false); // Correct the typo in variable name
-  const dispatch = useDispatch();
   const navigate = useNavigation();
   const [confirmOtp] = useConfirmOtpMutation();
   const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
@@ -148,6 +146,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
   },
+  
   otp: {
     marginTop: 30,
     flexDirection: "column",

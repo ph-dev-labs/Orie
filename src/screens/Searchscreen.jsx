@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import React, { useState } from "react";
 import CustomInputField from "../components/inputField";
 import Vector9 from "../../assets/Vector9.svg";
+
 import {
   Raleway_400Regular,
   Raleway_800ExtraBold,
@@ -29,6 +30,7 @@ const getFilteredSuggestions = (text) => {
 const Searchscreen = () => {
   const [searchField, setSearchField] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+
 
   const handleSearch = (text) => {
     setSearchField(text);
