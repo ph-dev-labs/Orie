@@ -6,9 +6,9 @@ import {
 } from "@expo-google-fonts/raleway";
 import AddBtn from "../../assets/Rectangle.svg"
 
-const CheckoutItem = ({ imageURL }) => {
+const CheckoutItem = ({ imageURL, style }) => {
   return (
-    <View style={styles.checkoutContainer}>
+    <View style={[styles.checkoutContainer, style]}>
      <Image
         source={require('../../assets/thomas-gamstaetter-IFGVE61AAno-unsplash.jpg')}
         style={styles.image}
@@ -29,11 +29,11 @@ const CheckoutItem = ({ imageURL }) => {
 const styles = StyleSheet.create({
   checkoutContainer: {
     height: 228,
-    width: 186,
+    width: 166,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#fff",
-    margin: 10,
+    margin: 3
   },
 
   add: {

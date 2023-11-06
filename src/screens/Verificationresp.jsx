@@ -11,7 +11,10 @@ import { Raleway_600SemiBold } from "@expo-google-fonts/raleway";
 import { useNavigation } from "@react-navigation/native";
 import SplitField from "../components/SplitField";
 import CustomButton from "../components/CustomBtn";
-import Loader from "./Loader"; 
+import Loader from "./Loader";
+import { useDispatch, useSelector } from "react-redux";
+import { setotp } from "../Redux/Auth/resetPassword";
+import { useResetPasswordOtpMutation } from "../Redux/Services/AuthAPi";
 
 const Verificationresp = () => {
   // Initialize OTP with empty strings
@@ -21,6 +24,10 @@ const Verificationresp = () => {
   const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
   const [isCounting, setIsCounting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+  const [confirmOtp] = useResetPasswordOtpMutation();
+
+  const email = useSelector((state) => state.resetPassword.email);
 
   const stringOtp = otp.join("");
 
@@ -56,7 +63,6 @@ const Verificationresp = () => {
     return () => clearInterval(timer);
   }, [countdown, isCounting]);
 
-  
   const handleResendOTP = () => {
     // Implement OTP resend functionality here
   };
@@ -67,11 +73,27 @@ const Verificationresp = () => {
     setOTP(updatedOTP);
   };
 
-  const handleVerification = () => {
-    navigate.navigate("create-new-password")
-  }
 
- 
+
+  const handleVerifyOtp = async () => {
+    if (stringOtp) {
+      const payload = {
+        email: email.toLowerCase(),
+        otp: stringOtp,
+      };
+      dispatch(setotp(stringOtp));
+      console.log(payload)
+      try {
+        const data = await confirmOtp(payload).unwrap();
+        if (data.msg) {
+          navigate.navigate("create-new-password");
+        }
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  };
+
   const [fontsLoaded] = useFonts({
     Raleway_600SemiBold,
   });
@@ -89,8 +111,7 @@ const Verificationresp = () => {
         <Text style={styles.verificationText}>Verification</Text>
         <Text style={styles.Header}>Enter reset code</Text>
         <Text style={styles.verificationText1}>
-          Enter the code we sent to{" "}
-          <Text style={styles.number}>example@gmail.com</Text>
+          Enter the code we sent to <Text style={styles.number}>{email}</Text>
         </Text>
         <View style={styles.otp}>
           <SplitField otp={otp} handleInputChange={handleInputChange} />
@@ -105,7 +126,7 @@ const Verificationresp = () => {
         </View>
       </View>
 
-      <CustomButton text="continue" onPress={handleVerification} />
+      <CustomButton text="continue" onPress={handleVerifyOtp} />
     </SafeAreaView>
   );
 };

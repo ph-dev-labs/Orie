@@ -15,6 +15,7 @@ import Verificationresp from './src/screens/Verificationresp';
 import ResetPasswod from './src/screens/ResetPasswod';
 import BuyerHome from './src/screens/Buyers-interface/BuyerHome';
 import Searchscreen from './src/screens/Searchscreen';
+import SearchProduct from './src/screens/Buyers-interface/SearchProduct';
 
 
 
@@ -77,12 +78,16 @@ export default function Main() {
           component={ResetPasswod}
         />
         <Stack.Screen
-          name="buyer-interface"
+          name="home"
           component={BuyerHome}
         />
         <Stack.Screen
           name="search"
           component={Searchscreen}
+        />
+        <Stack.Screen
+          name="product-search"
+          component={SearchProduct}
         />
       </Stack.Navigator>
     </NavigationContainer>

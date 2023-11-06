@@ -71,7 +71,8 @@ const Verification = () => {
 
       const response = await confirmOtp(payload).unwrap();
       setIsLoading(false);
-      if (response.message) {
+      if (response.msg && response.status == 200) {
+        console.log(response)
         setVisible(true);
         setTimeout(() => {
           setVisible(false);

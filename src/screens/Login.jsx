@@ -187,7 +187,7 @@ const Login = () => {
                 />
                 <Text style={styles.text3i}>Remember me</Text>
               </View>
-              <TouchableOpacity onPress={moveToShopPage}>
+              <TouchableOpacity onPress={() => navigate.navigate("Email-for-reset-password")}>
                 <Text style={styles.text3i}>Forgot Password</Text>
               </TouchableOpacity>
             </View>

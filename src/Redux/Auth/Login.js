@@ -72,7 +72,7 @@ export const moveToShopPage = (
       setVisible(true);
       setTimeout(() => {
         setVisible(false);
-        navigate.navigate("buyer-interface");
+        navigate.navigate("home");
       }, 2000);
     } catch (error) {
       setIsLoading(false);

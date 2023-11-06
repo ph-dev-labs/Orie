@@ -2,6 +2,8 @@ import { StyleSheet, Text, View, SafeAreaView } from "react-native";
 import React, { useState } from "react";
 import CustomInputField from "../components/inputField";
 import Vector9 from "../../assets/Vector9.svg";
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 import {
   Raleway_400Regular,
@@ -30,7 +32,7 @@ const getFilteredSuggestions = (text) => {
 const Searchscreen = () => {
   const [searchField, setSearchField] = useState("");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
-
+  const navigation = useNavigation()
 
   const handleSearch = (text) => {
     setSearchField(text);
@@ -46,9 +48,11 @@ const Searchscreen = () => {
           <CustomInputField onChangeText={handleSearch} value={searchField} />
           {filteredSuggestions.map((suggestion, index) => (
             <View style={styles.suggestionContainer} key={index}>
-              <Text key={index} style={styles.suggestion}>
-                {suggestion}
-              </Text>
+              <TouchableOpacity onPress={() => navigation.navigate("product-search")}>
+                <Text key={index} style={styles.suggestion}>
+                  {suggestion}
+                </Text>
+              </TouchableOpacity>
               <Vector9 />
             </View>
           ))}

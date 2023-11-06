@@ -8,6 +8,7 @@ import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
 import AsyncHolder from "../components/AsyncHolder";
 import Loader from "./Loader";
+import { useSelector } from "react-redux";
 const ResetPasswod = () => {
     const [showPassword, setShowPassword] = useState(true);
     const [passwordField, setPasswordField] = useState("");
@@ -16,6 +17,13 @@ const ResetPasswod = () => {
     const [isLoading, setIsLoading] = useState(false)
     const [visible, setVisible] = useState(false);
     const navigate = useNavigation();
+    const email = useSelector((state) => state.resetPassword.email)
+    const otp = useSelector((state) => state.resetPassword.otp)
+
+    console.log(email, otp)
+  
+
+
     const handlePassword = (text) => {
       setPasswordField(text);
     };
@@ -46,7 +54,7 @@ const ResetPasswod = () => {
             setError("Password criteria not met");
             return;
           } 
-          console.log("password change successfully")
+          
     }
   
     
@@ -81,7 +89,7 @@ const ResetPasswod = () => {
                   <Back style={styles.icon} />
                 </TouchableOpacity>
               </View>
-              <Text style={styles.text}>Create Password</Text>
+              <Text style={styles.text}>reset Password</Text>
             </View>
             <Text style={styles.Header}>Reset your password</Text>
             <Text style={styles.text2}>

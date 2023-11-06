@@ -62,7 +62,8 @@ const CustomInputField = ({ value, onChangeText, error, placeholder, style, keyb
       fontSize: 16,
       lineHeight: 23, 
       height: 40,
-      width: "100%"
+      width: "100%",
+      overflow: "hidden"
     },
     errorInput: {
       borderColor: 'red', // Border color when there's an error

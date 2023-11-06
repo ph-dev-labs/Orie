@@ -10,31 +10,60 @@ import {
 import CustomInputField from "../components/inputField";
 import CustomButton from "../components/CustomBtn";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import { setEmail } from "../Redux/Auth/resetPassword";
+import { useForgotPasswordMutation } from "../Redux/Services/AuthAPi";
 import Loader from "./Loader";
+
 const Emailresp = () => {
   const navigate = useNavigation();
-  const [email, setEmail] = useState("");
+  const [emailField, setEmailField] = useState("");
   const [emailError, setEmailError] = useState("");
-   // Regular expression for email validation
-   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+  const [loading, setLoading] = useState(false);
+  const [resetPasswordApi] = useForgotPasswordMutation();
+  const dispatch = useDispatch();
+  // Regular expression for email validation
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-   const validateEmail = (text) => {
-     return emailRegex.test(text);
-   };
+  const validateEmail = (text) => emailRegex.test(text);
 
-   const handleChange = (text) => {
+  const handleChange = (text) => {
     const isValidEmail = validateEmail(text);
     setEmailError(isValidEmail ? "" : "Invalid email address");
-    setEmail(text);
+    setEmailField(text);
   };
 
   const dispatchEmail = () => {
-    if(validateEmail(email)) {
-        navigate.navigate("Verification-for-reset-password")
+    const isValid = validateEmail(emailField) && emailField.length > 1;
+    if (isValid) {
+      dispatch(setEmail(emailField));
+      handleOtpGeneration(emailField);
+    } else {
+      setEmailError("Please enter a valid email address");
     }
+  };
+
+  const handleOtpGeneration = async ( val ) => {
+    const email = val.toLowerCase()
+    console.log(email)
+    setLoading(true);
+    try {
+      const data = await resetPasswordApi({email}).unwrap();
+      console.log(data)
+      setLoading(false);
+      if (data.msg) {
+        navigate.navigate("Verification-for-reset-password");
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  };
+
+  if (loading) {
+    return <Loader />;
   }
- 
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -56,13 +85,13 @@ const Emailresp = () => {
               placeholder="Enter email address"
               keyboardType={"default"}
               onChangeText={handleChange}
-              value={email}
+              value={emailField}
               error={emailError}
             />
           </View>
         </View>
         <View style={styles.btnView}>
-          <CustomButton text="send verification code"  onPress={dispatchEmail} />     
+          <CustomButton text="send verification code" onPress={dispatchEmail} />
         </View>
       </View>
     </SafeAreaView>

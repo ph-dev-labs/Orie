@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "column",
     justifyContent: "space-evenly",
+    paddingVertical: 17
   },
   content: {
     alignItems: "center",
