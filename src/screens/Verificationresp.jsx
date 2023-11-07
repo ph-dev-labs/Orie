@@ -15,6 +15,7 @@ import Loader from "./Loader";
 import { useDispatch, useSelector } from "react-redux";
 import { setotp } from "../Redux/Auth/resetPassword";
 import { useResetPasswordOtpMutation } from "../Redux/Services/AuthAPi";
+import AsyncHolder from "../components/AsyncHolder";
 
 const Verificationresp = () => {
   // Initialize OTP with empty strings
@@ -23,6 +24,7 @@ const Verificationresp = () => {
   const navigate = useNavigation();
   const [countdown, setCountdown] = useState(60); // Initial countdown time in seconds
   const [isCounting, setIsCounting] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
   const [confirmOtp] = useResetPasswordOtpMutation();
@@ -79,14 +81,18 @@ const Verificationresp = () => {
     if (stringOtp) {
       const payload = {
         email: email.toLowerCase(),
-        otp: stringOtp,
+        otp: parseInt(stringOtp)
       };
       dispatch(setotp(stringOtp));
-      console.log(payload)
+      setIsLoading(true)
       try {
         const data = await confirmOtp(payload).unwrap();
         if (data.msg) {
-          navigate.navigate("create-new-password");
+          setIsVisible(true)
+          setTimeout(() => {
+            setIsVisible(false)
+            navigate.navigate("create-new-password");
+          }, 2000);
         }
       } catch (error) {
         console.error(error)
@@ -108,6 +114,9 @@ const Verificationresp = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
+        <View>
+          <AsyncHolder visible={isVisible} text="correct otp"/>
+        </View>
         <Text style={styles.verificationText}>Verification</Text>
         <Text style={styles.Header}>Enter reset code</Text>
         <Text style={styles.verificationText1}>

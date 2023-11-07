@@ -64,10 +64,10 @@ export const registrationApi = createApi({
       }),
     }),
     resetPassword: builder.mutation({
-      query: ({ email, password }) => ({
+      query: ({ email, newPassword }) => ({
         url: "/reset-password",
         method: "POST",
-        body: { email, password },
+        body: { email, newPassword },
       }),
     }),
     resetPasswordOtp: builder.mutation({

@@ -14,12 +14,14 @@ import { useDispatch } from "react-redux";
 import { setEmail } from "../Redux/Auth/resetPassword";
 import { useForgotPasswordMutation } from "../Redux/Services/AuthAPi";
 import Loader from "./Loader";
+import AsyncHolder from "../components/AsyncHolder";
 
 const Emailresp = () => {
   const navigate = useNavigation();
   const [emailField, setEmailField] = useState("");
   const [emailError, setEmailError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false)
   const [resetPasswordApi] = useForgotPasswordMutation();
   const dispatch = useDispatch();
   // Regular expression for email validation
@@ -52,14 +54,19 @@ const Emailresp = () => {
       console.log(data)
       setLoading(false);
       if (data.msg) {
-        navigate.navigate("Verification-for-reset-password");
+        setIsVisible(true)
+        setTimeout(() => {
+          setIsVisible(false)
+          navigate.navigate("Verification-for-reset-password")
+        }, 2000)
+        ;
       }
     } catch (error) {
       setLoading(false);
       console.log(error);
     }
   };
-
+ 
   if (loading) {
     return <Loader />;
   }
@@ -68,6 +75,9 @@ const Emailresp = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
         <View>
+          <View style={{padding: 7}}>
+            <AsyncHolder visible={isVisible} text="otp successfully sent" />
+          </View>
           <View style={styles.hold}>
             <View style={styles.holder}>
               <TouchableOpacity onPress={() => navigate.goBack()}>
@@ -90,7 +100,7 @@ const Emailresp = () => {
             />
           </View>
         </View>
-        <View style={styles.btnView}>
+        <View style={{alignSelf: "center"}}>
           <CustomButton text="send verification code" onPress={dispatchEmail} />
         </View>
       </View>
@@ -111,6 +121,7 @@ const styles = StyleSheet.create({
     paddingVertical: 24,
     flexDirection: "column",
     justifyContent: "space-between",
+    alignItems: "flex-start"
   },
   holder: {
     height: 30,
@@ -165,11 +176,13 @@ const styles = StyleSheet.create({
   },
 
   hold: {
+    padding: 17,
     marginTop: 15,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: 250,
+    width: "85%",
+    
   },
 
   Header: {

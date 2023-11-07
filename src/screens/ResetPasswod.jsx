@@ -8,7 +8,9 @@ import Back from "../../assets/back.svg";
 import Eye from "../../assets/eye.svg";
 import AsyncHolder from "../components/AsyncHolder";
 import Loader from "./Loader";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useResetPasswordMutation } from "../Redux/Services/AuthAPi";
+import { setPassword } from "../Redux/Auth/resetPassword";
 const ResetPasswod = () => {
     const [showPassword, setShowPassword] = useState(true);
     const [passwordField, setPasswordField] = useState("");
@@ -16,11 +18,11 @@ const ResetPasswod = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false)
     const [visible, setVisible] = useState(false);
+    const [resetPassword] = useResetPasswordMutation()
     const navigate = useNavigation();
     const email = useSelector((state) => state.resetPassword.email)
     const otp = useSelector((state) => state.resetPassword.otp)
-
-    console.log(email, otp)
+    const dispatch = useDispatch()
   
 
 
@@ -54,19 +56,37 @@ const ResetPasswod = () => {
             setError("Password criteria not met");
             return;
           } 
-          
+          setError("")
+          dispatch(setPassword(passwordField))
+          showSuccessMessageAndRedirect()
     }
   
     
   
   
   
-    const showSuccessMessageAndRedirect = () => {
-      setVisible(true);
-      setTimeout(() => {
-        setVisible(false);
-        navigate.navigate("Verification");
-      }, 2000);
+    const showSuccessMessageAndRedirect = async () => {
+      const payload = {
+        email: email.toLowerCase(),
+        newPassword: passwordField
+      }
+      console.log(payload)
+      setIsLoading(true)
+      try {
+        const data = await resetPassword(payload).unwrap()
+        console.log(data)
+        setIsLoading(false)
+        if(data.msg){
+          setVisible(true);
+          setTimeout(() => {
+            setVisible(false);
+            navigate.navigate("Login");
+          }, 2000);
+        }
+      } catch (error) {
+        setIsLoading(false)
+        console.error(error)
+      }
     };
   
     if(isLoading) {
@@ -81,7 +101,7 @@ const ResetPasswod = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.content}>
            <View style={{flexDirection: "column" , justifyContent: "space-between", height: 425} }>
-            <View style={styles.msgHolder}><AsyncHolder visible={visible} text="Otp successful sent" /></View>
+            <View style={styles.msgHolder}><AsyncHolder visible={visible} text="password changed successfully" /></View>
             <View>
             <View style={styles.hold}>
               <View style={styles.holder}>
