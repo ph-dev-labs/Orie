@@ -2,20 +2,20 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ASYNC_STORAGE_KEY = "Auth_token";
+const BASE_URL = "http://orieapi.onrender.com/api";
 
 const getToken = async () => {
   try {
     const token = await AsyncStorage.getItem(ASYNC_STORAGE_KEY);
     return token ? `Bearer ${token}` : null;
   } catch (error) {
-    // Handle AsyncStorage retrieval error
     console.error("Error retrieving token:", error);
     return null;
   }
 };
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: "http://orieapi.onrender.com/api",
+  baseUrl: BASE_URL,
   prepareHeaders: async (headers, { getState }) => {
     const token = await getToken();
     if (token) {
@@ -50,17 +50,17 @@ export const registrationApi = createApi({
       }),
     }),
     userLogin: builder.mutation({
-      query: ({ email, password }) => ({
+      query: async ({ email, password }) => ({
         url: "/login",
         method: "POST",
         body: { email, password },
       }),
     }),
     forgotPassword: builder.mutation({
-      query: ( email ) => ({
+      query: (email) => ({
         url: "/forgot-password",
         method: "POST",
-        body:  email ,
+        body: email,
       }),
     }),
     resetPassword: builder.mutation({
@@ -78,15 +78,18 @@ export const registrationApi = createApi({
       }),
     }),
     getProduct: builder.query({
-      query: async () => {
+      queryFn: async () => {
         const token = await getToken();
-        return {
-          url: "/user/dashboard",
+        const result = await fetch(`${BASE_URL}/user/dashboard`, {
           method: "GET",
           headers: {
-            Authorization: token, 
+            Authorization: token,
           },
-        };
+        });
+        if (!result.ok) {
+          throw new Error("Failed to fetch data");
+        }
+        return result.json();
       },
     }),
   }),
@@ -100,5 +103,5 @@ export const {
   useForgotPasswordMutation,
   useGetProductQuery,
   useResetPasswordOtpMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
 } = registrationApi;
