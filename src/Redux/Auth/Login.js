@@ -1,12 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createSlice } from "@reduxjs/toolkit";
-import { useNavigation } from "@react-navigation/native";
 
 const ASYNC_STORAGE_KEY = "Auth_token";
 const initialState = {
   user: null,
   token: null,
   error: null,
+  userType: null,
+  isVerified: null
 };
 
 const loginSlice = createSlice({
@@ -14,10 +15,12 @@ const loginSlice = createSlice({
   initialState,
   reducers: {
     loginSuccess: (state, action) => {
-      const { user, token } = action.payload;
-      state.user = user;
+      const { userEmail, token,userType, emailVerified } = action.payload;
+      state.user = userEmail;
       state.token = token;
       state.error = null;
+      state.userType = userType;
+      state.isVerified = emailVerified;
     },
     loginFailure: (state, action) => {
       state.error = action.payload;
@@ -26,7 +29,9 @@ const loginSlice = createSlice({
       state.user = null;
       state.token = null;
       state.error = null;
-      AsyncStorage.removeItem(ASYNC_STORAGE_KEY).catch((error) => {
+      state.isVerified = null;
+      state.userType = null
+      AsyncStorage.removeItem( ASYNC_STORAGE_KEY).catch((error) => {
         console.error("Error clearing token from AsyncStorage:", error);
       });
     },
@@ -65,8 +70,7 @@ export const moveToShopPage = (
       const data = await loginApi({ email, password }).unwrap();
       setIsLoading(false);
       await handleTokenStorage(data.token);
-      dispatch(loginSuccess(data));
-
+      dispatch(loginSuccess(data));    
       setEmailField("");
       setPassword("");
       setVisible(true);

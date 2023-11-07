@@ -2,28 +2,29 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ASYNC_STORAGE_KEY = "Auth_token";
-const BASE_URL = "http://orieapi.onrender.com/api";
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: "http://orieapi.onrender.com/api",
+  prepareHeaders: async (headers, { getState }) => {
+    const token = await getToken();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+    return headers;
+  },
+});
+
+let token = null;
 
 const getToken = async () => {
   try {
-    const token = await AsyncStorage.getItem(ASYNC_STORAGE_KEY);
-    return token ? `Bearer ${token}` : null;
+    token = await AsyncStorage.getItem(ASYNC_STORAGE_KEY);
+    return token;
   } catch (error) {
     console.error("Error retrieving token:", error);
     return null;
   }
 };
-
-const baseQuery = fetchBaseQuery({
-  baseUrl: BASE_URL,
-  prepareHeaders: async (headers, { getState }) => {
-    const token = await getToken();
-    if (token) {
-      headers.set("Authorization", token);
-    }
-    return headers;
-  },
-});
 
 export const registrationApi = createApi({
   baseQuery,
@@ -50,7 +51,7 @@ export const registrationApi = createApi({
       }),
     }),
     userLogin: builder.mutation({
-      query: async ({ email, password }) => ({
+      query: ({ email, password }) => ({
         url: "/login",
         method: "POST",
         body: { email, password },
@@ -78,19 +79,13 @@ export const registrationApi = createApi({
       }),
     }),
     getProduct: builder.query({
-      queryFn: async () => {
-        const token = await getToken();
-        const result = await fetch(`${BASE_URL}/user/dashboard`, {
-          method: "GET",
-          headers: {
-            Authorization: token,
-          },
-        });
-        if (!result.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        return result.json();
-      },
+      query: () => ({
+        url: "/user/dashboard",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
     }),
   }),
 });

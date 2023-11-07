@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -19,10 +19,34 @@ import CheckoutItem from "../../components/CheckoutItem";
 import FarmerCheckout from "../../components/FarmerCheckout";
 import Toolbar from "../../components/Toolbar";
 import { useNavigation } from "@react-navigation/native";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useGetProductQuery } from "../../Redux/Services/AuthAPi";
+import Loader from "../Loader";
+import {
+  loadApplicationStart,
+  applicationSuccess,
+  applicationFailure,
+} from "../../Redux/Application/Application";
 
 const BuyerHome = () => {
   const [searchField, setSearchField] = useState("");
+  const product = useSelector((state) => state.product.product);
+  const isLoading = useSelector((state) => state.product.isLoading)
+  const dispatch = useDispatch();
+  const { data, error, isFetching } = useGetProductQuery();
+
+  useEffect(() => {
+    if (isFetching) {
+      dispatch(loadApplicationStart());
+    }
+    if (data) {
+      dispatch(applicationSuccess(data));
+    }
+    if (error) {
+      console.error(error);
+      dispatch(applicationFailure());
+    }
+  }, [data, error, isFetching, dispatch]);
 
   const categoriesArr = [
     "food items",
@@ -32,27 +56,27 @@ const BuyerHome = () => {
     "view more",
   ];
 
-
-
+  
   const handleSearch = (text) => {
     setSearchField(text);
   };
 
-  const navigation = useNavigation()
-  const data = [1, 2, 3, 4];
+  const navigation = useNavigation();
+  const val = [1, 2, 3, 4];
   const numColumns = 2;
   const windowWidth = Dimensions.get("window").width;
 
   const renderGridItem = () => {
-    return (
-      <FarmerCheckout /> 
-    );
+    return <FarmerCheckout />;
   };
 
   const handleInputFocus = () => {
-   
-    navigation.navigate('search');
+    navigation.navigate("search");
   };
+
+  if(isLoading) {
+    return <Loader />
+  }
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
@@ -123,76 +147,19 @@ const BuyerHome = () => {
                 Recommended for you at discounted prices
               </Text>
               <View style={{ margin: 5 }}>
-                <ScrollView
-                  style={{ flex: 1 }}
-                  horizontal={true}
-                  scrollEventThrottle={16}
-                  pagingEnabled={true}
-                >
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                </ScrollView>
+                <View style={{ flexDirection: "row", margin: 10 }}>
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={styles.scrollContent}
+                  >
+                    {product?.popularProducts?.map((item, index) => (
+                      <CheckoutItem key={index} item={item} />
+                    ))}
+                  </ScrollView>
+                </View>
 
-                <ScrollView
-                  style={{ flex: 1 }}
-                  horizontal={true}
-                  scrollEventThrottle={16}
-                  pagingEnabled={true}
-                >
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                  <View style={styles.slide}>
-                    <CheckoutItem />
-                  </View>
-                </ScrollView>
-                <View style={{padding: 0}}>
+                <View style={{ padding: 0 }}>
                   <View style={styles.featureProduct}>
                     <Text style={styles.categoryText}>Top rated farmers</Text>
                     <View style={styles.Imageicon}>
@@ -205,7 +172,7 @@ const BuyerHome = () => {
                   </Text>
                   <View style={styles.grid}>
                     <FlatList
-                      data={data}
+                      data={val}
                       renderItem={renderGridItem}
                       keyExtractor={(item) => item.toString()}
                       numColumns={numColumns} // Set the number of columns in your grid
@@ -255,10 +222,10 @@ const styles = StyleSheet.create({
   grid: {
     display: "flex",
     flexWrap: "wrap",
-    transform: [{translateX: -25}],
+    transform: [{ translateX: -25 }],
     alignSelf: "flex-start",
     marginBottom: 20,
-    width: "100%"
+    width: "100%",
   },
 
   contentContainer: {
@@ -289,7 +256,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     gap: 5,
     flexWrap: "nowrap",
-    flexGrow:1
+    flexGrow: 1,
   },
   categoryText: {
     fontFamily: "Raleway_600SemiBold",
@@ -331,7 +298,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     lineHeight: 36,
     alignSelf: "flex-start",
-    textTransform: "capitalize"
+    textTransform: "capitalize",
   },
   gradientBox: {
     backgroundColor: "#0AC17F",

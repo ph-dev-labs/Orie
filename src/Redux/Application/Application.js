@@ -43,16 +43,4 @@ export const {
 } = getProductSlice.actions;
 export default getProductSlice.reducer;
 
-const response = useGetProductQuery()
 
-export const loadProduct = async (dispatch) => {
-  try {
-    dispatch(loadApplicationStart())
-    const data = await response()
-    if(data.status === "ok") {
-        dispatch(applicationSuccess(data))
-    }
-  } catch (error) {
-    dispatch(applicationFailure())
-  }
-};

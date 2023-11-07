@@ -24,17 +24,32 @@ const EmailReg = () => {
   const [isEmailAvailable, setIsEmailAvailable] = useState(false);
   const [checkEmail] = useCheckEmailMutation();
 
-  // Regular expression for email validation
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
 
-  const validateEmail = (text) => {
+  const isEmailValid = (text) => {
     return emailRegex.test(text);
   };
 
-  const handleChange = (text) => {
-    const isValidEmail = validateEmail(text);
-    setEmailError(isValidEmail ? "" : "Invalid email address");
+  const handleEmailValidation = (text) => {
     setEmailAd(text);
+    const isValidEmail = isEmailValid(text);
+    setEmailError(isValidEmail ? "" : "Invalid email address");
+  };
+
+  const checkEmailExistence = async (email) => {
+    try {
+      if (isEmailValid(email)) {
+        const payload = { email };
+        const response = await checkEmail(payload).unwrap();
+
+        if (response.status === 200) {
+          setIsEmailAvailable(true);
+        }
+      }
+    } catch (error) {
+      setIsEmailAvailable(false);
+      setEmailError("Email already exists");
+    }
   };
 
   const navigateToLogin = () => {
@@ -42,31 +57,8 @@ const EmailReg = () => {
   };
 
   useEffect(() => {
-    const handleEmailCheck = async (email) => {
-      setEmailError("");
-      try {
-        setEmailError(""); // Reset email error message
-
-        if (validateEmail(email)) {
-          const payload = { email };
-
-          const response = await checkEmail(payload).unwrap();
-
-          if (response.status === 200) {
-            setIsEmailAvailable(true);
-          }
-        } else {
-          setEmailError("Enter a valid email");
-        }
-      } catch (error) {
-        setIsEmailAvailable(false);
-        setEmailError("Email already exists");
-      }
-    };
-
-    handleEmailCheck(emailAd);
+    checkEmailExistence(emailAd);
   }, [emailAd]);
-
   const handlePress = () => {
     navigate.navigate("Register-mobile");
   };
@@ -98,7 +90,7 @@ const EmailReg = () => {
             <CustomInputField
               placeholder="Enter email address"
               keyboardType={"default"}
-              onChangeText={handleChange}
+              onChangeText={handleEmailValidation}
               value={emailAd}
               error={emailError}
             />
@@ -114,12 +106,12 @@ const EmailReg = () => {
         </View>
         <View style={styles.btnView}>
           <CustomButton text="Continue" onPress={dispatchEmail} />
-          <Text style={styles.text3}>
-            Already have an account?{" "}
+          <View style={styles.loginLink} >
+            <Text style={styles.text31}>Already have an account? </Text>
             <TouchableOpacity onPress={navigateToLogin} style={styles.brand}>
               <Text style={styles.brand}>Login</Text>
             </TouchableOpacity>
-          </Text>
+          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -168,6 +160,13 @@ const styles = StyleSheet.create({
     margin: 10,
   },
 
+  text31: {
+    fontFamily: "Raleway_600SemiBold",
+    color: "black",
+    fontSize: 14,
+    lineHeight: 20,
+    textAlign: "center",
+  },
   text3: {
     fontFamily: "Raleway_600SemiBold",
     color: "black",
@@ -176,6 +175,7 @@ const styles = StyleSheet.create({
     margin: 10,
     textAlign: "center",
   },
+
 
   text3i: {
     fontFamily: "Raleway_600SemiBold",
@@ -210,5 +210,12 @@ const styles = StyleSheet.create({
 
   input: {
     marginTop: 25,
+  },
+  loginLink: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "90%",
+    margin: 10
   },
 });

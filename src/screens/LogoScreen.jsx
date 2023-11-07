@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     height: 120,
   },
   text: {
-    fontFamily: "Raleway_600SemiBold",
+    fontFamily: "Raleway_400Regular",
     fontSize: 14,
     fontWeight: 'bold',
     color: 'white',

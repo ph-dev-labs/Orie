@@ -6,20 +6,21 @@ import {
 } from "@expo-google-fonts/raleway";
 import AddBtn from "../../assets/Rectangle.svg"
 
-const CheckoutItem = ({ imageURL, style }) => {
+const CheckoutItem = ({ item, style }) => {
+  const {img, name, price} = item
   return (
     <View style={[styles.checkoutContainer, style]}>
-     <Image
-        source={require('../../assets/thomas-gamstaetter-IFGVE61AAno-unsplash.jpg')}
+      <Image
+        source={{ uri: img }} 
         style={styles.image}
         resizeMode="cover"
       />
       <View style={{ margin: 5 }}>
-        <Text style={styles.productDesc}>foreign rice</Text>
+        <Text style={styles.productDesc}>{name}</Text>
         <Text style={styles.farmName}>obapluto farm</Text>
       </View>
       <View style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: 'space-between', margin: 5}}>
-        <Text style={styles.productDesc2}>25000</Text>
+        <Text style={styles.productDesc2}>{price}</Text>
        <View style={styles.add}><Text style={styles.addtext}>+</Text></View>
       </View>
     </View>
@@ -29,11 +30,20 @@ const CheckoutItem = ({ imageURL, style }) => {
 const styles = StyleSheet.create({
   checkoutContainer: {
     height: 228,
-    width: 166,
+    width: 176,
     borderRadius: 10,
     overflow: "hidden",
     backgroundColor: "#fff",
-    margin: 3
+    margin: 5,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.23,
+    shadowRadius: 2.62,
+    // Box shadow styles for Android
+    elevation: 2,
   },
 
   add: {
